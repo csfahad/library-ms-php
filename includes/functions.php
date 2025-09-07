@@ -401,8 +401,12 @@ function getUsers($search = '', $role = '') {
         $params = [];
         
         if (!empty($search)) {
-            $sql .= " AND (name LIKE :search OR email LIKE :search)";
-            $params['search'] = "%$search%";
+            $sql .= " AND (name LIKE :search1 OR email LIKE :search2)";
+            $params['search1'] = "%$search%";
+            $params['search2'] = "%$search%";
+            
+            // Temporary debug - remove after testing
+            file_put_contents('/tmp/search_debug.txt', "Searching for: $search\nSQL: $sql\nParam1: " . $params['search1'] . "\nParam2: " . $params['search2'] . "\n", FILE_APPEND);
         }
         
         if (!empty($role)) {
@@ -414,14 +418,33 @@ function getUsers($search = '', $role = '') {
         
         $stmt = $db->prepare($sql);
         
+        if (!$stmt) {
+            file_put_contents('/tmp/search_debug.txt', "Failed to prepare statement\n", FILE_APPEND);
+            return [];
+        }
+        
         foreach ($params as $key => $value) {
             $stmt->bindValue(":$key", $value);
         }
         
-        $stmt->execute();
-        return $stmt->fetchAll();
+        $execute_result = $stmt->execute();
+        if (!$execute_result) {
+            file_put_contents('/tmp/search_debug.txt', "Failed to execute statement\n", FILE_APPEND);
+            return [];
+        }
+        
+        $results = $stmt->fetchAll();
+        
+        // More debug
+        file_put_contents('/tmp/search_debug.txt', "Results count: " . count($results) . "\n", FILE_APPEND);
+        foreach ($results as $result) {
+            file_put_contents('/tmp/search_debug.txt', "Found: " . $result['name'] . " (" . $result['email'] . ")\n", FILE_APPEND);
+        }
+        
+        return $results;
         
     } catch (Exception $e) {
+        file_put_contents('/tmp/search_debug.txt', "Exception: " . $e->getMessage() . "\n", FILE_APPEND);
         error_log("Get users error: " . $e->getMessage());
         return [];
     }
