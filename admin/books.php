@@ -492,412 +492,246 @@ $pageTitle = 'Manage Books';
     </style>
 
     <!-- Add Book Modal -->
-    <div id="addBookModal" class="simple-modal">
-        <div class="modal-dialog">
-            <div class="modal-header-new">
-                <h3><i class="fas fa-plus-circle"></i> Add New Book</h3>
-                <button class="modal-close-btn" onclick="hideModal('addBookModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body-new">
-                <form method="POST">
-                    <input type="hidden" name="action" value="add">
-                    
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label for="title">Book Title *</label>
-                            <input type="text" id="title" name="title" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="author">Author *</label>
-                            <input type="text" id="author" name="author" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label for="publisher">Publisher</label>
-                            <input type="text" id="publisher" name="publisher">
-                        </div>
-                        <div class="input-group">
-                            <label for="category">Category *</label>
-                            <select id="category" name="category" required>
-                                <option value="">Select Category</option>
-                                <option value="Fiction">Fiction</option>
-                                <option value="Non-Fiction">Non-Fiction</option>
-                                <option value="Science">Science</option>
-                                <option value="Technology">Technology</option>
-                                <option value="History">History</option>
-                                <option value="Biography">Biography</option>
-                                <option value="Education">Education</option>
-                                <option value="Literature">Literature</option>
-                                <option value="Computer Science">Computer Science</option>
-                                <option value="Science Fiction">Science Fiction</option>
-                                <option value="Romance">Romance</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label for="isbn">ISBN</label>
-                            <input type="text" id="isbn" name="isbn">
-                        </div>
-                        <div class="input-group">
-                            <label for="quantity">Quantity *</label>
-                            <input type="number" id="quantity" name="quantity" min="1" value="1" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label for="price">Price</label>
-                            <input type="number" id="price" name="price" step="0.01" min="0">
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid full-width">
-                        <div class="input-group">
-                            <label for="description">Description</label>
-                            <textarea id="description" name="description" rows="3"></textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="modal-actions-new">
-                        <button type="button" class="btn-new btn-secondary-new" onclick="hideModal('addBookModal')">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                        <button type="submit" class="btn-new btn-primary-new">
-                            <i class="fas fa-plus"></i> Add Book
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Edit Book Modal -->
-    <div id="editBookModal" class="simple-modal">
-        <div class="modal-dialog">
-            <div class="modal-header-new">
-                <h3><i class="fas fa-edit"></i> Edit Book</h3>
-                <button class="modal-close-btn" onclick="hideModal('editBookModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body-new">
-                <form method="POST">
-                    <input type="hidden" name="action" value="edit">
-                    <input type="hidden" id="editBookId" name="book_id">
-                    
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label for="editTitle">Book Title *</label>
-                            <input type="text" id="editTitle" name="title" required>
-                        </div>
-                        <div class="input-group">
-                            <label for="editAuthor">Author *</label>
-                            <input type="text" id="editAuthor" name="author" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label for="editPublisher">Publisher</label>
-                            <input type="text" id="editPublisher" name="publisher">
-                        </div>
-                        <div class="input-group">
-                            <label for="editCategory">Category *</label>
-                            <select id="editCategory" name="category" required>
-                                <option value="">Select Category</option>
-                                <option value="Fiction">Fiction</option>
-                                <option value="Non-Fiction">Non-Fiction</option>
-                                <option value="Science">Science</option>
-                                <option value="Technology">Technology</option>
-                                <option value="History">History</option>
-                                <option value="Biography">Biography</option>
-                                <option value="Education">Education</option>
-                                <option value="Literature">Literature</option>
-                                <option value="Computer Science">Computer Science</option>
-                                <option value="Science Fiction">Science Fiction</option>
-                                <option value="Romance">Romance</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label for="editIsbn">ISBN</label>
-                            <input type="text" id="editIsbn" name="isbn">
-                        </div>
-                        <div class="input-group">
-                            <label for="editQuantity">Quantity *</label>
-                            <input type="number" id="editQuantity" name="quantity" min="1" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="input-group">
-                            <label for="editPrice">Price</label>
-                            <input type="number" id="editPrice" name="price" step="0.01" min="0">
-                        </div>
-                    </div>
-                    
-                    <div class="form-grid full-width">
-                        <div class="input-group">
-                            <label for="editDescription">Description</label>
-                            <textarea id="editDescription" name="description" rows="3"></textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="modal-actions-new">
-                        <button type="button" class="btn-new btn-secondary-new" onclick="hideModal('editBookModal')">
-                            <i class="fas fa-times"></i> Cancel
-                        </button>
-                        <button type="submit" class="btn-new btn-primary-new">
-                            <i class="fas fa-save"></i> Save Changes
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteConfirmModal" class="simple-modal">
-        <div class="modal-dialog" style="max-width: 500px;">
-            <div class="modal-header-new" style="background: linear-gradient(135deg, #dc3545, #c82333);">
-                <h3><i class="fas fa-exclamation-triangle"></i> Confirm Delete</h3>
-                <button class="modal-close-btn" onclick="hideModal('deleteConfirmModal')">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body-new">
-                <div class="delete-warning">
-                    <i class="fas fa-trash-alt"></i>
-                    <h4 style="margin: 0 0 10px 0; color: #856404;">Delete Book</h4>
-                    <p style="margin: 0; color: #856404;">Are you sure you want to delete "<strong id="deleteBookTitle"></strong>"?</p>
-                </div>
-                
-                <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 15px; color: #721c24;">
-                    <strong><i class="fas fa-exclamation-triangle"></i> Warning:</strong>
-                    This action cannot be undone. The book will be permanently removed from your library.
-                </div>
-                
-                <form method="POST" id="deleteForm" style="display: none;">
-                    <input type="hidden" name="action" value="delete">
-                    <input type="hidden" name="book_id" id="deleteBookId">
-                </form>
-                
-                <div class="modal-actions-new">
-                    <button type="button" class="btn-new btn-secondary-new" onclick="hideModal('deleteConfirmModal')">
-                        <i class="fas fa-times"></i> Cancel
-                    </button>
-                    <button type="button" class="btn-new btn-danger-new" onclick="submitDelete()">
-                        <i class="fas fa-trash"></i> Delete Book
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Edit Book Modal -->
-    <div id="editBookModal" class="modal" style="display: none;">
-        <div class="modal-overlay"></div>
+    <div id="addBookModal" class="modal">
         <div class="modal-container">
             <div class="modal-content">
                 <div class="modal-header">
-                    <div class="modal-title-section">
-                        <div class="modal-icon">
-                            <i class="fas fa-edit"></i>
-                        </div>
-                        <div>
-                            <h2 class="modal-title">Edit Book</h2>
-                            <p class="modal-subtitle">Update book information</p>
-                        </div>
-                    </div>
-                    <button class="modal-close" onclick="closeModal('editBookModal')" type="button">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <h3 class="modal-title">Add New Book</h3>
+                    <button type="button" class="modal-close" data-modal-close>&times;</button>
                 </div>
-                
                 <div class="modal-body">
-                    <form method="POST" class="modal-form">
-                        <input type="hidden" name="action" value="edit">
-                        <input type="hidden" id="editBookId" name="book_id">
+                    <form method="POST">
+                        <input type="hidden" name="action" value="add">
                         
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="editTitle" class="form-label">
-                                    <i class="fas fa-book"></i>
-                                    Book Title <span class="required">*</span>
-                                </label>
-                                <input type="text" id="editTitle" name="title" class="form-control" placeholder="Enter book title" required>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="title" class="form-label">Book Title *</label>
+                                    <input type="text" id="title" name="title" class="form-control" required>
+                                </div>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="editAuthor" class="form-label">
-                                    <i class="fas fa-user-edit"></i>
-                                    Author <span class="required">*</span>
-                                </label>
-                                <input type="text" id="editAuthor" name="author" class="form-control" placeholder="Enter author name" required>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="author" class="form-label">Author *</label>
+                                    <input type="text" id="author" name="author" class="form-control" required>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="editPublisher" class="form-label">
-                                    <i class="fas fa-building"></i>
-                                    Publisher
-                                </label>
-                                <input type="text" id="editPublisher" name="publisher" class="form-control" placeholder="Enter publisher name">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="publisher" class="form-label">Publisher</label>
+                                    <input type="text" id="publisher" name="publisher" class="form-control">
+                                </div>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="editCategory" class="form-label">
-                                    <i class="fas fa-tags"></i>
-                                    Category <span class="required">*</span>
-                                </label>
-                                <select id="editCategory" name="category" class="form-control" required>
-                                    <option value="">Select Category</option>
-                                    <option value="Fiction">Fiction</option>
-                                    <option value="Non-Fiction">Non-Fiction</option>
-                                    <option value="Science">Science</option>
-                                    <option value="Technology">Technology</option>
-                                    <option value="History">History</option>
-                                    <option value="Biography">Biography</option>
-                                    <option value="Education">Education</option>
-                                    <option value="Literature">Literature</option>
-                                    <option value="Computer Science">Computer Science</option>
-                                    <option value="Science Fiction">Science Fiction</option>
-                                    <option value="Romance">Romance</option>
-                                    <option value="Other">Other</option>
-                                </select>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="category" class="form-label">Category *</label>
+                                    <select id="category" name="category" class="form-control" required>
+                                        <option value="">Select Category</option>
+                                        <option value="Fiction">Fiction</option>
+                                        <option value="Non-Fiction">Non-Fiction</option>
+                                        <option value="Science">Science</option>
+                                        <option value="Technology">Technology</option>
+                                        <option value="History">History</option>
+                                        <option value="Biography">Biography</option>
+                                        <option value="Education">Education</option>
+                                        <option value="Literature">Literature</option>
+                                        <option value="Computer Science">Computer Science</option>
+                                        <option value="Science Fiction">Science Fiction</option>
+                                        <option value="Romance">Romance</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="editIsbn" class="form-label">
-                                    <i class="fas fa-barcode"></i>
-                                    ISBN
-                                </label>
-                                <input type="text" id="editIsbn" name="isbn" class="form-control" placeholder="978-0-123456-78-9">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="isbn" class="form-label">ISBN</label>
+                                    <input type="text" id="isbn" name="isbn" class="form-control">
+                                </div>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="editQuantity" class="form-label">
-                                    <i class="fas fa-sort-numeric-up"></i>
-                                    Quantity <span class="required">*</span>
-                                </label>
-                                <input type="number" id="editQuantity" name="quantity" class="form-control" min="1" placeholder="1" required>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="quantity" class="form-label">Quantity *</label>
+                                    <input type="number" id="quantity" name="quantity" min="1" value="1" class="form-control" required>
+                                </div>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="editPrice" class="form-label">
-                                    <i class="fas fa-dollar-sign"></i>
-                                    Price
-                                </label>
-                                <input type="number" id="editPrice" name="price" class="form-control" step="0.01" min="0" placeholder="0.00">
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="price" class="form-label">Price</label>
+                                    <input type="number" id="price" name="price" step="0.01" min="0" class="form-control">
+                                </div>
                             </div>
                         </div>
                         
                         <div class="form-group">
-                            <label for="editDescription" class="form-label">
-                                <i class="fas fa-file-alt"></i>
-                                Description
-                            </label>
-                            <textarea id="editDescription" name="description" class="form-control" rows="3" placeholder="Enter book description (optional)"></textarea>
+                            <label for="description" class="form-label">Description</label>
+                            <textarea id="description" name="description" rows="3" class="form-control"></textarea>
                         </div>
                         
                         <div class="modal-actions">
-                            <button type="button" class="btn btn-secondary" onclick="closeModal('editBookModal')">
-                                <i class="fas fa-times"></i>
-                                Cancel
-                            </button>
+                            <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i>
-                                Save Changes
+                                <i class="fas fa-plus"></i> Add Book
                             </button>
                         </div>
                     </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteConfirmModal" class="modal" style="display: none;">
-        <div class="modal-overlay"></div>
-        <div class="modal-container" style="max-width: 500px;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <div class="modal-title-section">
-                        <div class="modal-icon" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.3);">
-                            <i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>
-                        </div>
-                        <div>
-                            <h2 class="modal-title">Confirm Delete</h2>
-                            <p class="modal-subtitle">This action cannot be undone</p>
-                        </div>
-                    </div>
-                    <button class="modal-close" onclick="closeModal('deleteConfirmModal')" type="button">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                
-                <div class="modal-body">
-                    <div class="modal-warning">
-                        <i class="fas fa-trash-alt"></i>
-                        <h4>Delete Book</h4>
-                        <p>Are you sure you want to delete "<span id="deleteBookTitle" class="book-title-highlight"></span>"?</p>
-                    </div>
-                    
-                    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin: 20px 0;">
-                        <div style="display: flex; align-items: center; gap: 8px; color: #dc2626; font-weight: 600; margin-bottom: 8px;">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Warning
-                        </div>
-                        <p style="color: #7f1d1d; margin: 0; font-size: 14px;">
-                            This will permanently remove the book from your library system. 
-                            If this book has been issued to any students, please return it first.
-                        </p>
-                    </div>
-                    
-                    <form method="POST" id="deleteForm" style="display: none;">
-                        <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="book_id" id="deleteBookId">
-                    </form>
-                    
-                    <div class="modal-actions">
-                        <button type="button" class="btn btn-secondary" onclick="closeModal('deleteConfirmModal')">
-                            <i class="fas fa-times"></i>
-                            Cancel
-                        </button>
-                        <button type="button" class="btn btn-danger" onclick="confirmDelete()">
-                            <i class="fas fa-trash"></i>
-                            Delete Book
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Edit Book Modal -->
+    <div id="editBookModal" class="modal">
+        <div class="modal-container">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Edit Book</h3>
+                    <button type="button" class="modal-close" data-modal-close>&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST">
+                        <input type="hidden" name="action" value="edit">
+                        <input type="hidden" id="editBookId" name="book_id">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editTitle" class="form-label">Book Title *</label>
+                                    <input type="text" id="editTitle" name="title" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editAuthor" class="form-label">Author *</label>
+                                    <input type="text" id="editAuthor" name="author" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editPublisher" class="form-label">Publisher</label>
+                                    <input type="text" id="editPublisher" name="publisher" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editCategory" class="form-label">Category *</label>
+                                    <select id="editCategory" name="category" class="form-control" required>
+                                        <option value="">Select Category</option>
+                                        <option value="Fiction">Fiction</option>
+                                        <option value="Non-Fiction">Non-Fiction</option>
+                                        <option value="Science">Science</option>
+                                        <option value="Technology">Technology</option>
+                                        <option value="History">History</option>
+                                        <option value="Biography">Biography</option>
+                                        <option value="Education">Education</option>
+                                        <option value="Literature">Literature</option>
+                                        <option value="Computer Science">Computer Science</option>
+                                        <option value="Science Fiction">Science Fiction</option>
+                                        <option value="Romance">Romance</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editIsbn" class="form-label">ISBN</label>
+                                    <input type="text" id="editIsbn" name="isbn" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editQuantity" class="form-label">Quantity *</label>
+                                    <input type="number" id="editQuantity" name="quantity" min="1" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="editPrice" class="form-label">Price</label>
+                                    <input type="number" id="editPrice" name="price" step="0.01" min="0" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editDescription" class="form-label">Description</label>
+                            <textarea id="editDescription" name="description" rows="3" class="form-control"></textarea>
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteConfirmModal" class="modal">
+        <div class="modal-container">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">
+                        <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
+                        Confirm Delete
+                    </h3>
+                    <button type="button" class="modal-close" data-modal-close>&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <i class="fas fa-trash-alt" style="font-size: 48px; color: #dc3545; margin-bottom: 15px;"></i>
+                        <h4 style="margin: 0 0 10px 0; color: #333;">Delete Book</h4>
+                        <p style="margin: 0; color: #666;">Are you sure you want to delete "<strong id="deleteBookTitle"></strong>"?</p>
+                    </div>
+                    
+                    <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; padding: 15px; color: #721c24; margin-bottom: 20px;">
+                        <strong><i class="fas fa-exclamation-triangle"></i> Warning:</strong>
+                        This action cannot be undone. The book will be permanently removed from your library.
+                    </div>
+                    
+                    <form method="POST" id="deleteForm">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="book_id" id="deleteBookId">
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Delete Book
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+                
     <script>
         // Store books data for JavaScript functions
         const booksData = <?php echo json_encode($books); ?>;
         
-        // Simple working modal functions
+        // Modal functions using LMS modal system
         function showAddBookModal() {
-            const modal = document.getElementById('addBookModal');
-            modal.classList.add('show');
-            document.body.style.overflow = 'hidden';
-            
-            // Reset form
-            const form = modal.querySelector('form');
-            form.reset();
+            LMS.openModal('addBookModal');
         }
         
         function editBook(bookId) {
@@ -915,50 +749,21 @@ $pageTitle = 'Manage Books';
                 document.getElementById('editDescription').value = book.description || '';
                 
                 // Show modal
-                const modal = document.getElementById('editBookModal');
-                modal.classList.add('show');
-                document.body.style.overflow = 'hidden';
+                LMS.openModal('editBookModal');
             }
         }
         
         function deleteBook(bookId, bookTitle) {
-            document.getElementById('deleteBookId').value = bookId;
+            // Set the book details in the delete modal
             document.getElementById('deleteBookTitle').textContent = bookTitle;
+            document.getElementById('deleteBookId').value = bookId;
             
-            // Show modal
-            const modal = document.getElementById('deleteConfirmModal');
-            modal.classList.add('show');
-            document.body.style.overflow = 'hidden';
+            // Show the delete confirmation modal
+            LMS.openModal('deleteConfirmModal');
         }
-        
-        function hideModal(modalId) {
-            const modal = document.getElementById(modalId);
-            modal.classList.remove('show');
-            document.body.style.overflow = 'auto';
-        }
-        
-        function submitDelete() {
-            const form = document.getElementById('deleteForm');
-            form.submit();
-        }
-        
-        // Close modal when clicking outside
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('simple-modal')) {
-                hideModal(e.target.id);
-            }
-        });
-        
-        // Close modal with Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                const openModal = document.querySelector('.simple-modal.show');
-                if (openModal) {
-                    hideModal(openModal.id);
-                }
-            }
-        });
     </script>
+
+    <script src="../assets/js/script.js"></script>
             
 </body>
 </html>

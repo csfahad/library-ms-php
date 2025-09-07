@@ -317,83 +317,87 @@ $pageTitle = 'Manage Users';
 
     <!-- Edit User Modal -->
     <div id="editUserModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Edit User</h3>
-                <button type="button" class="close" data-modal-close>&times;</button>
+        <div class="modal-container">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">Edit User</h3>
+                    <button type="button" class="modal-close" data-modal-close>&times;</button>
+                </div>
+                <form method="POST" data-validate="true">
+                    <div class="modal-body">
+                        <input type="hidden" name="action" value="edit">
+                        <input type="hidden" name="user_id" id="edit_user_id">
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit_name" class="form-label">Full Name *</label>
+                                    <input type="text" id="edit_name" name="name" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit_email" class="form-label">Email Address *</label>
+                                    <input type="email" id="edit_email" name="email" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit_role" class="form-label">Role *</label>
+                                    <select id="edit_role" name="role" class="form-control" required>
+                                        <option value="student">Student</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="edit_status" class="form-label">Status *</label>
+                                    <select id="edit_status" name="status" class="form-control" required>
+                                        <option value="active">Active</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit_phone" class="form-label">Phone Number</label>
+                            <input type="tel" id="edit_phone" name="phone" class="form-control">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit_address" class="form-label">Address</label>
+                            <textarea id="edit_address" name="address" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Update User
+                        </button>
+                    </div>
+                </form>
             </div>
-            <form method="POST" data-validate="true">
-                <div class="modal-body">
-                    <input type="hidden" name="action" value="edit">
-                    <input type="hidden" name="user_id" id="edit_user_id">
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="edit_name" class="form-label">Full Name *</label>
-                                <input type="text" id="edit_name" name="name" class="form-control" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="edit_email" class="form-label">Email Address *</label>
-                                <input type="email" id="edit_email" name="email" class="form-control" required>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="edit_role" class="form-label">Role *</label>
-                                <select id="edit_role" name="role" class="form-control" required>
-                                    <option value="student">Student</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="edit_status" class="form-label">Status *</label>
-                                <select id="edit_status" name="status" class="form-control" required>
-                                    <option value="active">Active</option>
-                                    <option value="inactive">Inactive</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="edit_phone" class="form-label">Phone Number</label>
-                        <input type="tel" id="edit_phone" name="phone" class="form-control">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="edit_address" class="form-label">Address</label>
-                        <textarea id="edit_address" name="address" class="form-control" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Update User
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 
     <!-- View User Modal -->
     <div id="viewUserModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">User Details</h3>
-                <button type="button" class="close" data-modal-close>&times;</button>
-            </div>
-            <div class="modal-body" id="viewUserContent">
-                <!-- Content will be loaded dynamically -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-modal-close>Close</button>
+        <div class="modal-container">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title">User Details</h3>
+                    <button type="button" class="modal-close" data-modal-close>&times;</button>
+                </div>
+                <div class="modal-body" id="viewUserContent">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" data-modal-close>Close</button>
+                </div>
             </div>
         </div>
     </div>
