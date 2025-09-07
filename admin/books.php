@@ -210,52 +210,62 @@ $pageTitle = 'Manage Books';
                 </button>
             </div>
 
-            <!-- Search Section -->
-            <div class="card mb-4">
-                <div class="card-body">
-                    <form method="GET" action="" class="row g-3">
-                        <div class="col-md-8">
+            <!-- Search and Filters -->
+            <div class="content-card">
+                <div class="content-card-header">
+                    <h3 class="content-card-title">
+                        <i class="fas fa-search"></i> Search Books
+                    </h3>
+                </div>
+                <div class="content-card-body">
+                    <form method="GET" class="simple-search-form">
+                        <div class="search-field-group">
                             <label for="search" class="form-label">Search Books</label>
-                            <input type="text" class="form-control" id="search" name="search" 
-                                   placeholder="Search by title, author, ISBN, or category..." 
-                                   value="<?php echo htmlspecialchars($search); ?>">
-                        </div>
-                        <div class="col-md-4 d-flex align-items-end">
-                            <button type="submit" class="btn btn-primary me-2">
-                                <i class="fas fa-search"></i> Search
-                            </button>
-                            <?php if (!empty($search)): ?>
-                                <a href="books.php" class="btn btn-secondary">
-                                    <i class="fas fa-times"></i> Clear
-                                </a>
-                            <?php endif; ?>
+                            <div class="search-input-container">
+                                <input 
+                                    type="text" 
+                                    id="search" 
+                                    name="search" 
+                                    class="form-control search-field" 
+                                    placeholder="Search by title, author, ISBN, or category..."
+                                    value="<?php echo htmlspecialchars($search); ?>"
+                                >
+                                <button type="submit" class="btn btn-primary search-btn">
+                                    <i class="fas fa-search"></i> Search
+                                </button>
+                                <?php if (!empty($search)): ?>
+                                    <a href="books.php" class="btn btn-secondary clear-btn">
+                                        <i class="fas fa-times"></i> Clear
+                                    </a>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
 
             <!-- Books Table -->
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">
+            <div class="content-card">
+                <div class="content-card-header">
+                    <h3 class="content-card-title">
                         <i class="fas fa-list"></i> Books List
                         <span class="text-muted">(<?php echo count($books); ?> books found)</span>
                     </h3>
                 </div>
-                <div class="card-body">
+                <div class="content-card-body">
                     <?php if (empty($books)): ?>
-                        <div class="text-center py-5">
-                            <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                        <div class="empty-state">
+                            <i class="fas fa-book"></i>
                             <h4>No books found</h4>
-                            <p class="text-muted">No books match your search criteria.</p>
+                            <p>No books match your search criteria.</p>
                             <button class="btn btn-primary" onclick="showAddBookModal()">
                                 <i class="fas fa-plus"></i> Add First Book
                             </button>
                         </div>
                     <?php else: ?>
                         <div class="table-responsive">
-                            <table class="table table-striped table-hover">
-                                <thead class="table-dark">
+                            <table class="table">
+                                <thead>
                                     <tr>
                                         <th>Title</th>
                                         <th>Author</th>
