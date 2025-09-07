@@ -1,0 +1,54 @@
+# Ignore files that shouldn't be copied to Docker containers
+
+# Version control
+.git
+.gitignore
+
+# IDE files  
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+
+# Local environment files
+.env
+.env.local
+
+# Backups
+backups/
+*.backup
+*.bak
+
+# Documentation (not needed in container)
+README.md
+DOCKER_SETUP.md
+*.md
+
+# Setup scripts (not needed in container)
+setup_*.sh
+backup_*.sh
+*.bat
+
+# Database files (loaded via volume)
+database/*.sql
+
+# Node modules if any
+node_modules/
+
+# Composer vendor if any
+vendor/
+
+# Local uploads directory (use volume instead)
+uploads/local/

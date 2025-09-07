@@ -1,0 +1,98 @@
+services:
+    # PHP-FPM with Apache Web Server
+    web:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: lms_web
+        restart: unless-stopped
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www/html
+            - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+        environment:
+            - DB_HOST=mysql
+            - DB_NAME=library_management_system
+            - DB_USER=lms_user
+            - DB_PASS=lms_password_123
+        depends_on:
+            mysql:
+                condition: service_healthy
+        networks:
+            - lms-network
+
+    # MySQL Database
+    mysql:
+        image: mysql:8.0
+        container_name: lms_mysql
+        restart: unless-stopped
+        environment:
+            MYSQL_ROOT_PASSWORD: root_password_123
+            MYSQL_DATABASE: library_management_system
+            MYSQL_USER: lms_user
+            MYSQL_PASSWORD: lms_password_123
+        ports:
+            - "3306:3306"
+        volumes:
+            - mysql_data:/var/lib/mysql
+            - ./database/library_management_system.sql:/docker-entrypoint-initdb.d/init.sql
+        command: --default-authentication-plugin=mysql_native_password --sql-mode=TRADITIONAL
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "mysqladmin",
+                    "ping",
+                    "-h",
+                    "localhost",
+                    "-u",
+                    "root",
+                    "-proot_password_123",
+                ]
+            start_period: 30s
+            interval: 30s
+            timeout: 10s
+            retries: 5
+        networks:
+            - lms-network
+
+    # phpMyAdmin for database management
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: lms_phpmyadmin
+        restart: unless-stopped
+        ports:
+            - "8080:80"
+        environment:
+            PMA_HOST: mysql
+            PMA_PORT: 3306
+            PMA_USER: lms_user
+            PMA_PASSWORD: lms_password_123
+        depends_on:
+            - mysql
+        networks:
+            - lms-network
+
+    # Redis for session storage and caching (optional but recommended)
+    redis:
+        image: redis:7-alpine
+        container_name: lms_redis
+        restart: unless-stopped
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis_data:/data
+        command: redis-server --appendonly yes
+        networks:
+            - lms-network
+
+volumes:
+    mysql_data:
+        driver: local
+    redis_data:
+        driver: local
+
+networks:
+    lms-network:
+        driver: bridge

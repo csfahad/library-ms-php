@@ -1,0 +1,63 @@
+# Dependency directories (if using composer for PHP)
+vendor/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Environment files
+.env
+
+# PHP cache
+*.cache
+*.php~
+*.swp
+*.swo
+
+# Composer files
+composer.lock
+
+# IDE/editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.github
+
+# Docker volumes, containers, etc.
+docker-compose.override.yml
+docker-data/
+**/docker-entrypoint-initdb.d/*
+
+# MySQL Data (mounted as volume)
+mysql/
+db_data/
+
+# Apache/Nginx logs (if stored locally)
+logs/
+*.pid
+
+# Build output (if using a build tool like webpack, gulp, etc.)
+dist/
+build/
+
+# Frontend build artifacts
+*.map
+*.min.js
+*.min.css
+
+# Cache
+.cache/
+.cache-loader/
+
+# PHPUnit or testing output
+.phpunit.result.cache
+coverage/
+
+# Misc
+*.bak
+*.tmp
+*.backup
