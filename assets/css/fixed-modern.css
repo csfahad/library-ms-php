@@ -273,14 +273,6 @@ a:hover {
     }
 }
 
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-group + .form-group {
-    margin-top: 1rem;
-}
-
 .form-label {
     display: block;
     margin-bottom: 0.25rem;

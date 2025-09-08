@@ -4,6 +4,9 @@ require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 requireAdmin();
 
+// Initialize database connection
+$pdo = getDB();
+
 // Handle report generation
 $report_type = $_GET['type'] ?? 'overview';
 $date_from = $_GET['date_from'] ?? date('Y-m-01'); // First day of current month
@@ -47,10 +50,9 @@ switch ($report_type) {
         $popular_books = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
         // Category distribution
-        $stmt = $pdo->query("SELECT c.category_name, COUNT(b.book_id) as book_count 
-                            FROM categories c 
-                            LEFT JOIN books b ON c.category_id = b.category_id 
-                            GROUP BY c.category_id 
+        $stmt = $pdo->query("SELECT b.category as category_name, COUNT(b.book_id) as book_count 
+                            FROM books b 
+                            GROUP BY b.category 
                             ORDER BY book_count DESC");
         $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
         
@@ -131,14 +133,13 @@ switch ($report_type) {
     case 'popular_books':
         $report_title = 'Popular Books Report';
         
-        $stmt = $pdo->prepare("SELECT b.title, b.author, b.isbn, c.category_name,
+        $stmt = $pdo->prepare("SELECT b.title, b.author, b.isbn, b.category as category_name,
                               COUNT(ib.issue_id) as issue_count,
                               COUNT(CASE WHEN ib.issue_date BETWEEN ? AND ? THEN 1 END) as recent_issues,
                               b.quantity, 
                               (b.quantity - COUNT(CASE WHEN ib.status = 'issued' THEN 1 END)) as available_copies
                               FROM books b
                               LEFT JOIN issued_books ib ON b.book_id = ib.book_id
-                              LEFT JOIN categories c ON b.category_id = c.category_id
                               GROUP BY b.book_id
                               ORDER BY issue_count DESC");
         $stmt->execute([$date_from, $date_to]);
@@ -185,735 +186,538 @@ switch ($report_type) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports - Admin Panel</title>
+    <title>Reports - Admin Panel - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/fixed-modern.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .reports-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-        }
-        
-        .header-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-        
-        .report-controls {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .control-row {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 1rem;
-        }
-        
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-        
-        .control-group label {
-            font-size: 0.875rem;
-            color: #666;
-            font-weight: 500;
-        }
-        
-        .control-group select,
-        .control-group input {
-            padding: 0.5rem;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
-        
-        .report-tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .tab-button {
-            padding: 0.5rem 1rem;
-            border: none;
-            background: #f8f9fa;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.875rem;
-        }
-        
-        .tab-button.active {
-            background: #667eea;
-            color: white;
-        }
-        
-        .tab-button:hover {
-            background: #e9ecef;
-        }
-        
-        .tab-button.active:hover {
-            background: #5a6fd8;
-        }
-        
-        .report-content {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        
-        .report-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .report-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #2c3e50;
-            margin: 0;
-        }
-        
-        .report-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .btn-export {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.875rem;
-            transition: all 0.2s;
-        }
-        
-        .btn-export.pdf {
-            background: #e74c3c;
-            color: white;
-        }
-        
-        .btn-export.excel {
-            background: #27ae60;
-            color: white;
-        }
-        
-        .btn-export.print {
-            background: #3498db;
-            color: white;
-        }
-        
-        .report-body {
-            padding: 1.5rem;
-        }
-        
-        .stats-overview {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .stat-card h3 {
-            font-size: 2rem;
-            margin: 0 0 0.5rem 0;
-        }
-        
-        .stat-card p {
-            margin: 0;
-            opacity: 0.9;
-        }
-        
-        .chart-container {
-            margin-bottom: 2rem;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-        
-        .chart-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            color: #2c3e50;
-        }
-        
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-        
-        .data-table th,
-        .data-table td {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .data-table th {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #495057;
-        }
-        
-        .data-table tr:hover {
-            background: #f8f9fa;
-        }
-        
-        .status-badge {
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-        
-        .status-issued {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .status-returned {
-            background: #d1ecf1;
-            color: #0c5460;
-        }
-        
-        .status-overdue {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .fine-amount {
-            color: #e74c3c;
-            font-weight: 600;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #666;
-        }
-        
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-        
-        @media (max-width: 768px) {
-            .control-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .report-header {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            .report-actions {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .stats-overview {
-                grid-template-columns: 1fr;
-            }
-            
-            .data-table {
-                font-size: 0.875rem;
-            }
-            
-            .data-table th,
-            .data-table td {
-                padding: 0.5rem;
-            }
-        }
-        
-        @media print {
-            .report-controls,
-            .report-actions,
-            nav {
-                display: none !important;
-            }
-            
-            .report-content {
-                box-shadow: none;
-                border: 1px solid #ddd;
-            }
-        }
-    </style>
 </head>
-<body>
-    <nav class="admin-nav">
-        <div class="nav-brand">
-            <i class="fas fa-book"></i>
-            <span>Library Admin</span>
-        </div>
-        <div class="nav-menu">
-            <a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="books.php"><i class="fas fa-book"></i> Books</a>
-            <a href="users.php"><i class="fas fa-users"></i> Users</a>
-            <a href="issue-book.php"><i class="fas fa-hand-holding"></i> Issue</a>
-            <a href="return-book.php"><i class="fas fa-undo"></i> Return</a>
-            <a href="reports.php" class="active"><i class="fas fa-chart-bar"></i> Reports</a>
-            <a href="../includes/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </div>
-        <div class="nav-toggle">
-            <i class="fas fa-bars"></i>
+<body class="admin-layout">
+    <!-- Admin Navbar -->
+    <nav class="admin-navbar">
+        <div class="navbar-content">
+            <a href="dashboard.php" class="navbar-brand">
+                <i class="fas fa-book-open"></i>
+                <?php echo SITE_NAME; ?>
+            </a>
+            <ul class="navbar-nav">
+                <li><span class="nav-text"><i class="fas fa-user-shield"></i> Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span></li>
+                <li><a href="../includes/logout.php" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
         </div>
     </nav>
 
-    <div class="main-content">
-        <div class="reports-container">
-            <!-- Header Section -->
-            <div class="header-section">
-                <h1><i class="fas fa-chart-bar"></i> Library Reports</h1>
-                <p>Generate comprehensive reports and analytics</p>
+    <!-- Admin Container -->
+    <div class="admin-container">
+        <!-- Admin Sidebar -->
+        <aside class="admin-sidebar">
+            <ul class="sidebar-nav">
+                <li class="nav-item">
+                    <a href="dashboard.php" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="books.php" class="nav-link">
+                        <i class="fas fa-book"></i> Manage Books
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="users.php" class="nav-link">
+                        <i class="fas fa-users"></i> Manage Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="issue-book.php" class="nav-link">
+                        <i class="fas fa-hand-holding"></i> Issue Book
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="return-book.php" class="nav-link">
+                        <i class="fas fa-undo"></i> Return Book
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.php" class="nav-link active">
+                        <i class="fas fa-chart-bar"></i> Reports
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.php" class="nav-link">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Admin Main Content -->
+        <main class="admin-main">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header" >
+                <h1 class="dashboard-title" >
+                    <i class="fas fa-chart-bar"></i> Library Reports
+                </h1>
+                <p class="dashboard-subtitle" style="margin-bottom: 0;">Generate comprehensive reports and analytics</p>
             </div>
 
             <!-- Report Controls -->
-            <div class="report-controls">
-                <form method="GET" id="reportForm">
-                    <div class="report-tabs">
-                        <button type="button" class="tab-button <?= $report_type === 'overview' ? 'active' : '' ?>" onclick="setReportType('overview')">
-                            <i class="fas fa-chart-pie"></i> Overview
-                        </button>
-                        <button type="button" class="tab-button <?= $report_type === 'issued_books' ? 'active' : '' ?>" onclick="setReportType('issued_books')">
-                            <i class="fas fa-hand-holding"></i> Issued Books
-                        </button>
-                        <button type="button" class="tab-button <?= $report_type === 'returned_books' ? 'active' : '' ?>" onclick="setReportType('returned_books')">
-                            <i class="fas fa-undo"></i> Returned Books
-                        </button>
-                        <button type="button" class="tab-button <?= $report_type === 'overdue_books' ? 'active' : '' ?>" onclick="setReportType('overdue_books')">
-                            <i class="fas fa-exclamation-triangle"></i> Overdue Books
-                        </button>
-                        <button type="button" class="tab-button <?= $report_type === 'user_activity' ? 'active' : '' ?>" onclick="setReportType('user_activity')">
-                            <i class="fas fa-users"></i> User Activity
-                        </button>
-                        <button type="button" class="tab-button <?= $report_type === 'popular_books' ? 'active' : '' ?>" onclick="setReportType('popular_books')">
-                            <i class="fas fa-star"></i> Popular Books
-                        </button>
-                        <button type="button" class="tab-button <?= $report_type === 'financial' ? 'active' : '' ?>" onclick="setReportType('financial')">
-                            <i class="fas fa-dollar-sign"></i> Financial
-                        </button>
-                    </div>
-                    
-                    <?php if (in_array($report_type, ['issued_books', 'returned_books', 'popular_books', 'financial'])): ?>
-                    <div class="control-row">
-                        <div class="control-group">
-                            <label for="date_from">From Date:</label>
-                            <input type="date" id="date_from" name="date_from" value="<?= htmlspecialchars($date_from) ?>">
+            <div class="admin-card" >
+                <div class="card-body">
+                    <form method="GET" id="reportForm">
+                        <div class="form-row" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 200px;">
+                                <label class="form-label">Select Report:</label>
+                                <select name="type" class="form-control" onchange="this.form.submit()">
+                                    <option value="overview" <?= $report_type === 'overview' ? 'selected' : '' ?>>Library Overview</option>
+                                    <option value="issued_books" <?= $report_type === 'issued_books' ? 'selected' : '' ?>>Issued Books</option>
+                                    <option value="returned_books" <?= $report_type === 'returned_books' ? 'selected' : '' ?>>Returned Books</option>
+                                    <option value="overdue_books" <?= $report_type === 'overdue_books' ? 'selected' : '' ?>>Overdue Books</option>
+                                    <option value="user_activity" <?= $report_type === 'user_activity' ? 'selected' : '' ?>>User Activity</option>
+                                    <option value="popular_books" <?= $report_type === 'popular_books' ? 'selected' : '' ?>>Popular Books</option>
+                                    <option value="financial" <?= $report_type === 'financial' ? 'selected' : '' ?>>Financial Report</option>
+                                </select>
+                            </div>
+                            
+                            <?php if (in_array($report_type, ['issued_books', 'returned_books', 'popular_books', 'financial'])): ?>
+                            <div class="form-group" style="flex: 0 0 auto; min-width: 160px;">
+                                <label class="form-label">From Date:</label>
+                                <input type="date" name="date_from" class="form-control" value="<?= htmlspecialchars($date_from) ?>">
+                            </div>
+                            <div class="form-group" style="flex: 0 0 auto; min-width: 160px;">
+                                <label class="form-label">To Date:</label>
+                                <input type="date" name="date_to" class="form-control" value="<?= htmlspecialchars($date_to) ?>">
+                            </div>
+                            <div class="form-group" style="flex: 0 0 auto; margin: auto;">
+                                <button type="submit" class="btn btn-primary" style="padding: 18px 20px;">
+                                    <i class="fas fa-filter"></i> Filter
+                                </button>
+                            </div>
+                            <?php endif; ?>
                         </div>
-                        <div class="control-group">
-                            <label for="date_to">To Date:</label>
-                            <input type="date" id="date_to" name="date_to" value="<?= htmlspecialchars($date_to) ?>">
-                        </div>
-                        <div class="control-group">
-                            <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-search"></i> Generate Report
-                            </button>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                    
-                    <input type="hidden" name="type" id="reportType" value="<?= htmlspecialchars($report_type) ?>">
-                </form>
-            </div>
-
+                    </form>
             <!-- Report Content -->
-            <div class="report-content">
-                <div class="report-header">
-                    <h2 class="report-title"><?= htmlspecialchars($report_title) ?></h2>
-                    <div class="report-actions">
-                        <button class="btn-export print" onclick="window.print()">
-                            <i class="fas fa-print"></i> Print
-                        </button>
-                        <button class="btn-export pdf" onclick="exportToPDF()">
-                            <i class="fas fa-file-pdf"></i> PDF
-                        </button>
-                        <button class="btn-export excel" onclick="exportToExcel()">
-                            <i class="fas fa-file-excel"></i> Excel
-                        </button>
-                    </div>
+            <div class="admin-card">
+                <div class="card-header" style="display: flex; justify-content: space-between; align-items: center; border-radius: 10px">
+                    <h3 style="margin: 0;"><?= htmlspecialchars($report_title) ?></h3>
+                    <button class="btn btn-secondary" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print
+                    </button>
                 </div>
-
-                <div class="report-body">
+                <div class="card-body">
                     <?php if ($report_type === 'overview'): ?>
                         <!-- Overview Report -->
-                        <div class="stats-overview">
-                            <div class="stat-card">
-                                <h3><?= number_format($report_data['stats']['total_books']) ?></h3>
-                                <p><i class="fas fa-book"></i> Total Books</p>
+                        <div class="stats-grid">
+                            <div class="stat-card books">
+                                <div class="stat-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 class="stat-number"><?= number_format($report_data['stats']['total_books']) ?></h3>
+                                    <p class="stat-label">Total Books</p>
+                                </div>
                             </div>
-                            <div class="stat-card">
-                                <h3><?= number_format($report_data['stats']['total_users']) ?></h3>
-                                <p><i class="fas fa-users"></i> Total Users</p>
+
+                            <div class="stat-card users">
+                                <div class="stat-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 class="stat-number"><?= number_format($report_data['stats']['total_users']) ?></h3>
+                                    <p class="stat-label">Total Users</p>
+                                </div>
                             </div>
-                            <div class="stat-card">
-                                <h3><?= number_format($report_data['stats']['currently_issued']) ?></h3>
-                                <p><i class="fas fa-hand-holding"></i> Currently Issued</p>
+
+                            <div class="stat-card issued">
+                                <div class="stat-icon">
+                                    <i class="fas fa-hand-holding"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 class="stat-number"><?= number_format($report_data['stats']['currently_issued']) ?></h3>
+                                    <p class="stat-label">Currently Issued</p>
+                                </div>
                             </div>
-                            <div class="stat-card">
-                                <h3><?= number_format($report_data['stats']['overdue_books']) ?></h3>
-                                <p><i class="fas fa-exclamation-triangle"></i> Overdue Books</p>
-                            </div>
-                            <div class="stat-card">
-                                <h3>$<?= number_format($report_data['stats']['total_fines'], 2) ?></h3>
-                                <p><i class="fas fa-dollar-sign"></i> Total Fines</p>
+
+                            <div class="stat-card overdue">
+                                <div class="stat-icon">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <h3 class="stat-number"><?= number_format($report_data['stats']['overdue_books']) ?></h3>
+                                    <p class="stat-label">Overdue Books</p>
+                                </div>
                             </div>
                         </div>
 
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;">
-                            <!-- Popular Books -->
-                            <div class="chart-container">
-                                <h3 class="chart-title">Popular Books</h3>
-                                <table class="data-table">
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <h4>Popular Books</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Book Title</th>
+                                                <th>Issues</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($report_data['popular_books'] as $book): ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($book['title']) ?></td>
+                                                <td><span class="badge badge-primary"><?= number_format($book['issue_count']) ?></span></td>
+                                            </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Book Categories</h4>
+                                <canvas id="categoryChart" width="300" height="200"></canvas>
+                            </div>
+                        </div>
+
+                    <?php elseif ($report_type === 'overdue_books'): ?>
+                        <!-- Overdue Books Report -->
+                        <?php if (empty($report_data)): ?>
+                            <div class="empty-state text-center py-5">
+                                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                                <h4>No Overdue Books</h4>
+                                <p class="text-muted">Great! There are currently no overdue books.</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
                                     <thead>
                                         <tr>
                                             <th>Book Title</th>
-                                            <th>Issues</th>
+                                            <th>User</th>
+                                            <th>Contact</th>
+                                            <th>Due Date</th>
+                                            <th>Days Overdue</th>
+                                            <th>Fine Amount</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php foreach ($report_data['popular_books'] as $book): ?>
+                                        <?php foreach ($report_data as $record): ?>
                                         <tr>
-                                            <td><?= htmlspecialchars($book['title']) ?></td>
-                                            <td><?= number_format($book['issue_count']) ?></td>
+                                            <td>
+                                                <strong><?= htmlspecialchars($record['title']) ?></strong><br>
+                                                <small class="text-muted">ISBN: <?= htmlspecialchars($record['isbn']) ?></small>
+                                            </td>
+                                            <td><?= htmlspecialchars($record['name']) ?></td>
+                                            <td>
+                                                <?= htmlspecialchars($record['email']) ?><br>
+                                                <?php if ($record['phone']): ?>
+                                                    <small class="text-muted"><?= htmlspecialchars($record['phone']) ?></small>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?= date('M d, Y', strtotime($record['due_date'])) ?></td>
+                                            <td>
+                                                <span class="badge badge-danger"><?= $record['days_overdue'] ?> days</span>
+                                            </td>
+                                            <td>
+                                                <span class="text-danger font-weight-bold">$<?= number_format($record['fine_amount'], 2) ?></span>
+                                            </td>
                                         </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>
-
-                            <!-- Categories -->
-                            <div class="chart-container">
-                                <h3 class="chart-title">Book Categories</h3>
-                                <canvas id="categoryChart" width="300" height="200"></canvas>
-                            </div>
-                        </div>
+                        <?php endif; ?>
 
                     <?php elseif ($report_type === 'issued_books'): ?>
                         <!-- Issued Books Report -->
                         <?php if (empty($report_data)): ?>
-                            <div class="empty-state">
-                                <i class="fas fa-book-open"></i>
-                                <h3>No Data Found</h3>
-                                <p>No books were issued in the selected date range.</p>
+                            <div class="empty-state text-center py-5">
+                                <i class="fas fa-book-open fa-3x text-muted mb-3"></i>
+                                <h4>No Data Found</h4>
+                                <p class="text-muted">No books were issued in the selected date range.</p>
                             </div>
                         <?php else: ?>
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Book Title</th>
-                                        <th>User</th>
-                                        <th>Issue Date</th>
-                                        <th>Due Date</th>
-                                        <th>Status</th>
-                                        <th>Days Overdue</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($report_data as $record): ?>
-                                    <tr>
-                                        <td>
-                                            <strong><?= htmlspecialchars($record['title']) ?></strong><br>
-                                            <small><?= htmlspecialchars($record['author']) ?></small>
-                                        </td>
-                                        <td>
-                                            <?= htmlspecialchars($record['name']) ?><br>
-                                            <small><?= htmlspecialchars($record['email']) ?></small>
-                                        </td>
-                                        <td><?= date('M d, Y', strtotime($record['issue_date'])) ?></td>
-                                        <td><?= date('M d, Y', strtotime($record['due_date'])) ?></td>
-                                        <td>
-                                            <span class="status-badge status-<?= $record['status'] ?>">
-                                                <?= ucfirst($record['status']) ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <?php if ($record['days_overdue'] > 0): ?>
-                                                <span class="fine-amount"><?= $record['days_overdue'] ?> days</span>
-                                            <?php else: ?>
-                                                -
-                                            <?php endif; ?>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Book Title</th>
+                                            <th>User</th>
+                                            <th>Issue Date</th>
+                                            <th>Due Date</th>
+                                            <th>Status</th>
+                                            <th>Days Overdue</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($report_data as $record): ?>
+                                        <tr>
+                                            <td>
+                                                <strong><?= htmlspecialchars($record['title']) ?></strong><br>
+                                                <small class="text-muted"><?= htmlspecialchars($record['author']) ?></small>
+                                            </td>
+                                            <td>
+                                                <?= htmlspecialchars($record['name']) ?><br>
+                                                <small class="text-muted"><?= htmlspecialchars($record['email']) ?></small>
+                                            </td>
+                                            <td><?= date('M d, Y', strtotime($record['issue_date'])) ?></td>
+                                            <td><?= date('M d, Y', strtotime($record['due_date'])) ?></td>
+                                            <td>
+                                                <span class="badge badge-<?= $record['status'] === 'issued' ? 'warning' : 'success' ?>">
+                                                    <?= ucfirst($record['status']) ?>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <?php if (isset($record['days_overdue']) && $record['days_overdue'] > 0): ?>
+                                                    <span class="badge badge-danger"><?= $record['days_overdue'] ?> days</span>
+                                                <?php else: ?>
+                                                    -
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
                         <?php endif; ?>
 
                     <?php elseif ($report_type === 'returned_books'): ?>
                         <!-- Returned Books Report -->
                         <?php if (empty($report_data)): ?>
-                            <div class="empty-state">
-                                <i class="fas fa-undo"></i>
-                                <h3>No Data Found</h3>
-                                <p>No books were returned in the selected date range.</p>
+                            <div class="empty-state text-center py-5">
+                                <i class="fas fa-undo fa-3x text-muted mb-3"></i>
+                                <h4>No Data Found</h4>
+                                <p class="text-muted">No books were returned in the selected date range.</p>
                             </div>
                         <?php else: ?>
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Book Title</th>
-                                        <th>User</th>
-                                        <th>Issue Date</th>
-                                        <th>Due Date</th>
-                                        <th>Return Date</th>
-                                        <th>Days Late</th>
-                                        <th>Fine</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($report_data as $record): ?>
-                                    <tr>
-                                        <td>
-                                            <strong><?= htmlspecialchars($record['title']) ?></strong><br>
-                                            <small><?= htmlspecialchars($record['author']) ?></small>
-                                        </td>
-                                        <td>
-                                            <?= htmlspecialchars($record['name']) ?><br>
-                                            <small><?= htmlspecialchars($record['email']) ?></small>
-                                        </td>
-                                        <td><?= date('M d, Y', strtotime($record['issue_date'])) ?></td>
-                                        <td><?= date('M d, Y', strtotime($record['due_date'])) ?></td>
-                                        <td><?= date('M d, Y', strtotime($record['return_date'])) ?></td>
-                                        <td>
-                                            <?php if ($record['days_late'] > 0): ?>
-                                                <span class="fine-amount"><?= $record['days_late'] ?> days</span>
-                                            <?php else: ?>
-                                                On time
-                                            <?php endif; ?>
-                                        </td>
-                                        <td>
-                                            <?php if ($record['fine_amount'] > 0): ?>
-                                                <span class="fine-amount">$<?= number_format($record['fine_amount'], 2) ?></span>
-                                            <?php else: ?>
-                                                $0.00
-                                            <?php endif; ?>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        <?php endif; ?>
-
-                    <?php elseif ($report_type === 'overdue_books'): ?>
-                        <!-- Overdue Books Report -->
-                        <?php if (empty($report_data)): ?>
-                            <div class="empty-state">
-                                <i class="fas fa-check-circle"></i>
-                                <h3>No Overdue Books</h3>
-                                <p>Great! There are currently no overdue books.</p>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Book Title</th>
+                                            <th>User</th>
+                                            <th>Issue Date</th>
+                                            <th>Due Date</th>
+                                            <th>Return Date</th>
+                                            <th>Days Late</th>
+                                            <th>Fine</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($report_data as $record): ?>
+                                        <tr>
+                                            <td>
+                                                <strong><?= htmlspecialchars($record['title']) ?></strong><br>
+                                                <small class="text-muted"><?= htmlspecialchars($record['author']) ?></small>
+                                            </td>
+                                            <td>
+                                                <?= htmlspecialchars($record['name']) ?><br>
+                                                <small class="text-muted"><?= htmlspecialchars($record['email']) ?></small>
+                                            </td>
+                                            <td><?= date('M d, Y', strtotime($record['issue_date'])) ?></td>
+                                            <td><?= date('M d, Y', strtotime($record['due_date'])) ?></td>
+                                            <td><?= date('M d, Y', strtotime($record['return_date'])) ?></td>
+                                            <td>
+                                                <?php if (isset($record['days_late']) && $record['days_late'] > 0): ?>
+                                                    <span class="badge badge-warning"><?= $record['days_late'] ?> days</span>
+                                                <?php else: ?>
+                                                    <span class="text-success">On time</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <?php if (isset($record['fine_amount']) && $record['fine_amount'] > 0): ?>
+                                                    <span class="text-danger font-weight-bold">$<?= number_format($record['fine_amount'], 2) ?></span>
+                                                <?php else: ?>
+                                                    $0.00
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
                             </div>
-                        <?php else: ?>
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Book Title</th>
-                                        <th>User</th>
-                                        <th>Contact</th>
-                                        <th>Due Date</th>
-                                        <th>Days Overdue</th>
-                                        <th>Fine Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($report_data as $record): ?>
-                                    <tr>
-                                        <td>
-                                            <strong><?= htmlspecialchars($record['title']) ?></strong><br>
-                                            <small>ISBN: <?= htmlspecialchars($record['isbn']) ?></small>
-                                        </td>
-                                        <td><?= htmlspecialchars($record['name']) ?></td>
-                                        <td>
-                                            <?= htmlspecialchars($record['email']) ?><br>
-                                            <?php if ($record['phone']): ?>
-                                                <small><?= htmlspecialchars($record['phone']) ?></small>
-                                            <?php endif; ?>
-                                        </td>
-                                        <td><?= date('M d, Y', strtotime($record['due_date'])) ?></td>
-                                        <td>
-                                            <span class="fine-amount"><?= $record['days_overdue'] ?> days</span>
-                                        </td>
-                                        <td>
-                                            <span class="fine-amount">$<?= number_format($record['fine_amount'], 2) ?></span>
-                                        </td>
-                                    </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
                         <?php endif; ?>
 
                     <?php elseif ($report_type === 'user_activity'): ?>
                         <!-- User Activity Report -->
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>User</th>
-                                    <th>Registration Date</th>
-                                    <th>Total Issued</th>
-                                    <th>Currently Issued</th>
-                                    <th>Returned</th>
-                                    <th>Overdue</th>
-                                    <th>Total Fines</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($report_data as $record): ?>
-                                <tr>
-                                    <td>
-                                        <strong><?= htmlspecialchars($record['name']) ?></strong><br>
-                                        <small><?= htmlspecialchars($record['email']) ?></small>
-                                    </td>
-                                    <td><?= date('M d, Y', strtotime($record['registration_date'])) ?></td>
-                                    <td><?= number_format($record['total_issued']) ?></td>
-                                    <td><?= number_format($record['currently_issued']) ?></td>
-                                    <td><?= number_format($record['total_returned']) ?></td>
-                                    <td>
-                                        <?php if ($record['overdue_count'] > 0): ?>
-                                            <span class="fine-amount"><?= $record['overdue_count'] ?></span>
-                                        <?php else: ?>
-                                            0
-                                        <?php endif; ?>
-                                    </td>
-                                    <td>
-                                        <?php if ($record['total_fines'] > 0): ?>
-                                            <span class="fine-amount">$<?= number_format($record['total_fines'], 2) ?></span>
-                                        <?php else: ?>
-                                            $0.00
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                        <?php if (empty($report_data)): ?>
+                            <div class="empty-state text-center py-5">
+                                <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                                <h4>No Data Found</h4>
+                                <p class="text-muted">No user activity data available.</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>User</th>
+                                            <th>Registration Date</th>
+                                            <th>Total Issued</th>
+                                            <th>Currently Issued</th>
+                                            <th>Returned</th>
+                                            <th>Overdue</th>
+                                            <th>Total Fines</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($report_data as $record): ?>
+                                        <tr>
+                                            <td>
+                                                <strong><?= htmlspecialchars($record['name']) ?></strong><br>
+                                                <small class="text-muted"><?= htmlspecialchars($record['email']) ?></small>
+                                            </td>
+                                            <td><?= date('M d, Y', strtotime($record['registration_date'])) ?></td>
+                                            <td><span class="badge badge-primary"><?= number_format($record['total_issued']) ?></span></td>
+                                            <td><span class="badge badge-warning"><?= number_format($record['currently_issued']) ?></span></td>
+                                            <td><span class="badge badge-success"><?= number_format($record['total_returned']) ?></span></td>
+                                            <td>
+                                                <?php if ($record['overdue_count'] > 0): ?>
+                                                    <span class="badge badge-danger"><?= $record['overdue_count'] ?></span>
+                                                <?php else: ?>
+                                                    0
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <?php if ($record['total_fines'] > 0): ?>
+                                                    <span class="text-danger font-weight-bold">$<?= number_format($record['total_fines'], 2) ?></span>
+                                                <?php else: ?>
+                                                    $0.00
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
 
                     <?php elseif ($report_type === 'popular_books'): ?>
                         <!-- Popular Books Report -->
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Book Title</th>
-                                    <th>Author</th>
-                                    <th>Category</th>
-                                    <th>Total Issues</th>
-                                    <th>Recent Issues</th>
-                                    <th>Available Copies</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($report_data as $record): ?>
-                                <tr>
-                                    <td>
-                                        <strong><?= htmlspecialchars($record['title']) ?></strong><br>
-                                        <small>ISBN: <?= htmlspecialchars($record['isbn']) ?></small>
-                                    </td>
-                                    <td><?= htmlspecialchars($record['author']) ?></td>
-                                    <td><?= htmlspecialchars($record['category_name'] ?? 'Uncategorized') ?></td>
-                                    <td><?= number_format($record['issue_count']) ?></td>
-                                    <td><?= number_format($record['recent_issues']) ?></td>
-                                    <td><?= number_format($record['available_copies']) ?></td>
-                                </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+                        <?php if (empty($report_data)): ?>
+                            <div class="empty-state text-center py-5">
+                                <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                                <h4>No Data Found</h4>
+                                <p class="text-muted">No popular books data available.</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Book Title</th>
+                                            <th>Author</th>
+                                            <th>Category</th>
+                                            <th>Total Issues</th>
+                                            <th>Recent Issues</th>
+                                            <th>Available Copies</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($report_data as $record): ?>
+                                        <tr>
+                                            <td>
+                                                <strong><?= htmlspecialchars($record['title']) ?></strong><br>
+                                                <small class="text-muted">ISBN: <?= htmlspecialchars($record['isbn'] ?? 'N/A') ?></small>
+                                            </td>
+                                            <td><?= htmlspecialchars($record['author']) ?></td>
+                                            <td><?= htmlspecialchars($record['category_name'] ?? 'Uncategorized') ?></td>
+                                            <td><span class="badge badge-primary"><?= number_format($record['issue_count']) ?></span></td>
+                                            <td><span class="badge badge-info"><?= number_format($record['recent_issues'] ?? 0) ?></span></td>
+                                            <td><span class="badge badge-success"><?= number_format($record['available_copies'] ?? 0) ?></span></td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
 
                     <?php elseif ($report_type === 'financial'): ?>
                         <!-- Financial Report -->
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2rem;">
+                        <div class="row">
                             <!-- Monthly Fines -->
-                            <div class="chart-container">
-                                <h3 class="chart-title">Monthly Fine Collection</h3>
+                            <div class="col-md-6">
+                                <h4>Monthly Fine Collection</h4>
                                 <?php if (empty($report_data['monthly_fines'])): ?>
-                                    <p>No fines collected in the selected period.</p>
+                                    <p class="text-muted">No fines collected in the selected period.</p>
                                 <?php else: ?>
-                                    <table class="data-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Month</th>
-                                                <th>Amount</th>
-                                                <th>Returns</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($report_data['monthly_fines'] as $fine): ?>
-                                            <tr>
-                                                <td><?= date('F Y', strtotime($fine['month'] . '-01')) ?></td>
-                                                <td class="fine-amount">$<?= number_format($fine['monthly_fines'], 2) ?></td>
-                                                <td><?= number_format($fine['returns_with_fines']) ?></td>
-                                            </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Month</th>
+                                                    <th>Amount</th>
+                                                    <th>Returns</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($report_data['monthly_fines'] as $fine): ?>
+                                                <tr>
+                                                    <td><?= date('F Y', strtotime($fine['month'] . '-01')) ?></td>
+                                                    <td><span class="text-success font-weight-bold">$<?= number_format($fine['monthly_fines'], 2) ?></span></td>
+                                                    <td><?= number_format($fine['returns_with_fines']) ?></td>
+                                                </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 <?php endif; ?>
                             </div>
 
                             <!-- Outstanding Fines -->
-                            <div class="chart-container">
-                                <h3 class="chart-title">Outstanding Fines</h3>
+                            <div class="col-md-6">
+                                <h4>Outstanding Fines</h4>
                                 <?php if (empty($report_data['outstanding_fines'])): ?>
-                                    <p>No outstanding fines.</p>
+                                    <p class="text-muted">No outstanding fines.</p>
                                 <?php else: ?>
-                                    <table class="data-table">
-                                        <thead>
-                                            <tr>
-                                                <th>User</th>
-                                                <th>Overdue Books</th>
-                                                <th>Fine Amount</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <?php foreach ($report_data['outstanding_fines'] as $fine): ?>
-                                            <tr>
-                                                <td>
-                                                    <strong><?= htmlspecialchars($fine['name']) ?></strong><br>
-                                                    <small><?= htmlspecialchars($fine['email']) ?></small>
-                                                </td>
-                                                <td><?= number_format($fine['overdue_books']) ?></td>
-                                                <td class="fine-amount">$<?= number_format($fine['outstanding_fine'], 2) ?></td>
-                                            </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>User</th>
+                                                    <th>Overdue Books</th>
+                                                    <th>Fine Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <?php foreach ($report_data['outstanding_fines'] as $fine): ?>
+                                                <tr>
+                                                    <td>
+                                                        <strong><?= htmlspecialchars($fine['name']) ?></strong><br>
+                                                        <small class="text-muted"><?= htmlspecialchars($fine['email']) ?></small>
+                                                    </td>
+                                                    <td><span class="badge badge-warning"><?= number_format($fine['overdue_books']) ?></span></td>
+                                                    <td><span class="text-danger font-weight-bold">$<?= number_format($fine['outstanding_fine'], 2) ?></span></td>
+                                                </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                         </div>
+
+                    <?php else: ?>
+                        <!-- Other Reports - Generic Table -->
+                        <?php if (empty($report_data)): ?>
+                            <div class="empty-state text-center py-5">
+                                <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                                <h4>No Data Found</h4>
+                                <p class="text-muted">No data available for the selected criteria.</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <tbody>
+                                        <?php foreach ($report_data as $record): ?>
+                                        <tr>
+                                            <td><?= json_encode($record) ?></td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </div>
-        </div>
+        </main>
     </div>
 
     <script src="../assets/js/script.js"></script>
@@ -921,17 +725,6 @@ switch ($report_type) {
         function setReportType(type) {
             document.getElementById('reportType').value = type;
             document.getElementById('reportForm').submit();
-        }
-        
-        function exportToPDF() {
-            // Simple implementation - opens print dialog
-            // In a real implementation, you might use jsPDF or similar
-            window.print();
-        }
-        
-        function exportToExcel() {
-            // Simple implementation - you might use SheetJS or similar
-            alert('Excel export functionality would be implemented here');
         }
         
         // Chart for overview page
@@ -946,8 +739,8 @@ switch ($report_type) {
                 datasets: [{
                     data: categoryData.map(cat => cat.book_count),
                     backgroundColor: [
-                        '#667eea', '#764ba2', '#f093fb', '#f5576c', 
-                        '#4facfe', '#00f2fe', '#43e97b', '#38f9d7'
+                        '#007bff', '#28a745', '#dc3545', '#ffc107', 
+                        '#17a2b8', '#6f42c1', '#fd7e14', '#20c997'
                     ]
                 }]
             },
@@ -961,19 +754,6 @@ switch ($report_type) {
             }
         });
         <?php endif; ?>
-        
-        // Auto-submit form on date change
-        document.addEventListener('DOMContentLoaded', function() {
-            const dateInputs = document.querySelectorAll('input[type="date"]');
-            dateInputs.forEach(input => {
-                input.addEventListener('change', function() {
-                    // Add a small delay to allow user to select both dates
-                    setTimeout(() => {
-                        document.getElementById('reportForm').submit();
-                    }, 1000);
-                });
-            });
-        });
     </script>
 </body>
 </html>
