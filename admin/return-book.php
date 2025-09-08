@@ -4,6 +4,9 @@ require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 requireAdmin();
 
+// Get database connection
+$pdo = getDB();
+
 // Process return if form submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['return_book'])) {
     $issue_id = (int)$_POST['issue_id'];
@@ -90,118 +93,153 @@ $issued_books = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Return Books - Admin Panel</title>
+    <title>Return Books - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/fixed-modern.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .return-container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+        /* Custom styles for return book page */
+        
+        /* Search form styling */
+        .search-field-group {
+            margin-bottom: 0;
         }
         
-        .header-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .search-input-container {
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            flex-wrap: nowrap;
+        }
+        
+        .search-input-container .form-control,
+        .search-input-container .form-select,
+        .search-input-container .btn {
+            height: 42px;
+            margin: 0;
+        }
+        
+        .search-input-container .form-control {
+            flex: 2;
+            min-width: 250px;
+        }
+        
+        .search-input-container .form-select {
+            flex: 1.2;
+            min-width: 180px;
+            padding: 0.5rem 0.75rem;
+            line-height: 1.5;
+        }
+        
+        .search-input-container .clear-btn {
+            flex-shrink: 0;
+            background: var(--secondary-color);
             color: white;
-            padding: 2rem;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            text-align: center;
+            border: 1px solid var(--secondary-color);
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
+        .search-input-container .clear-btn:hover {
+            background: var(--secondary-hover);
+            border-color: var(--secondary-hover);
+        }
+        
+        .form-label {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        /* Compact stats grid */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: 1rem;
             margin-bottom: 2rem;
         }
         
         .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid;
+            padding: 1.25rem 1rem;
+            min-height: auto;
         }
         
-        .stat-card.overdue { border-color: #e74c3c; }
-        .stat-card.due-soon { border-color: #f39c12; }
-        .stat-card.normal { border-color: #2ecc71; }
-        .stat-card.total { border-color: #3498db; }
-        
-        .stat-card h3 {
-            margin: 0 0 0.5rem 0;
-            font-size: 2rem;
-            font-weight: bold;
-        }
-        
-        .stat-card p {
-            margin: 0;
-            color: #666;
-        }
-        
-        .search-bar {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        
-        .search-controls {
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
             display: flex;
-            gap: 1rem;
             align-items: center;
-            flex-wrap: wrap;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 auto 0.5rem;
         }
         
-        .search-input {
-            flex: 1;
-            min-width: 250px;
-            padding: 0.75rem;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
+        .stat-icon i {
+            font-size: 1.25rem;
         }
         
-        .filter-select {
-            padding: 0.75rem;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            background: white;
-            font-size: 1rem;
-            min-width: 150px;
+        .stat-content {
+            text-align: center;
         }
         
-        .books-grid {
+        .stat-number {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        
+        .books-container {
             display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 1.5rem;
+            margin-top: 1rem;
         }
         
-        .book-card {
-            background: white;
-            border-radius: 15px;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-left: 6px solid;
-            transition: transform 0.2s, box-shadow 0.2s;
+        .book-item {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
-        .book-card:hover {
+        .book-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+            box-shadow: var(--shadow-md);
         }
         
-        .book-card.overdue { border-color: #e74c3c; }
-        .book-card.due-soon { border-color: #f39c12; }
-        .book-card.normal { border-color: #2ecc71; }
+        /* Main content area with horizontal layout */
+        .book-content {
+            display: flex;
+            padding: 0.5rem;
+            gap: 0.75rem;
+            flex: 1;
+        }
+        
+        .book-info-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
         
         .book-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
         
         .book-info {
@@ -209,117 +247,133 @@ $issued_books = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         
         .book-title {
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #2c3e50;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
             margin: 0 0 0.5rem 0;
+            line-height: 1.3;
         }
         
         .book-meta {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
         }
         
-        .issue-details {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 1rem 0;
-            padding: 1rem;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        
-        .detail-item {
-            text-align: center;
-        }
-        
-        .detail-label {
+        .book-meta span {
+            color: var(--text-secondary);
             font-size: 0.8rem;
-            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        
+        .book-meta i {
+            width: 12px;
+            color: var(--text-light);
+            flex-shrink: 0;
+            font-size: 0.75rem;
+        }
+        
+        .book-status {
+            flex-shrink: 0;
+        }
+        
+        /* Horizontal details grid */
+        .book-details-horizontal {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: auto;
+            padding: 0.5rem;
+            background: var(--bg-tertiary);
+            border-radius: var(--border-radius);
+        }
+        
+        .detail-item-horizontal {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .detail-item-horizontal label {
+            display: block;
+            font-size: 0.65rem;
+            color: var(--text-light);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
             margin-bottom: 0.25rem;
+            font-weight: 500;
         }
         
-        .detail-value {
-            font-weight: bold;
-            font-size: 1rem;
-        }
-        
-        .status-badge {
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
+        .detail-item-horizontal span {
+            font-weight: 600;
+            color: var(--text-primary);
             font-size: 0.8rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            line-height: 1.2;
         }
         
-        .status-overdue {
-            background: #e74c3c;
-            color: white;
+        /* Button section */
+        .book-action-section {
+            padding: 0.5rem 0.75rem 0.75rem 0.75rem;
         }
         
-        .status-due-soon {
-            background: #f39c12;
-            color: white;
+        .alert-warning {
+            background: var(--warning-light);
+            color: var(--warning-color);
+            border: 1px solid rgba(217, 119, 6, 0.2);
+            border-radius: var(--border-radius);
+            padding: 0.5rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
         }
         
-        .status-normal {
-            background: #2ecc71;
-            color: white;
+        .alert-warning i {
+            color: var(--warning-color);
+            font-size: 0.8rem;
         }
         
-        .fine-info {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            color: #856404;
-            padding: 0.75rem;
-            border-radius: 8px;
-            margin: 1rem 0;
-            text-align: center;
-            font-weight: bold;
+        .book-actions {
+            margin-top: 0;
         }
         
-        .return-button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.2s;
+        .book-actions .btn {
             width: 100%;
-            margin-top: 1rem;
-        }
-        
-        .return-button:hover {
-            transform: translateY(-1px);
+            padding: 0.6rem 1rem;
+            font-weight: 500;
+            font-size: 0.9rem;
         }
         
         .empty-state {
             text-align: center;
-            padding: 3rem;
-            color: #666;
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
         }
         
-        .empty-state i {
-            font-size: 4rem;
+        .empty-icon {
             margin-bottom: 1rem;
-            opacity: 0.5;
         }
         
+        .empty-icon i {
+            font-size: 4rem;
+            color: var(--text-light);
+        }
+        
+        .empty-state h3 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Modal improvements */
         .modal {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
+            display: none;
             z-index: 1000;
         }
         
@@ -328,55 +382,195 @@ $issued_books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: white;
-            padding: 2rem;
-            border-radius: 15px;
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-xl);
             max-width: 500px;
             width: 90%;
-            text-align: center;
+            border: 1px solid var(--border-color);
         }
         
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            margin: 0;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+        
+        .return-details p {
+            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .return-details strong {
+            color: var(--text-primary);
+        }
+        
+        /* Mobile responsiveness */
         @media (max-width: 768px) {
-            .search-controls {
-                flex-direction: column;
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.75rem;
+            }
+            
+            .stat-number {
+                font-size: 1.5rem;
+            }
+            
+            .stat-label {
+                font-size: 0.8rem;
+            }
+            
+            .search-input-container {
+                flex-wrap: wrap;
                 align-items: stretch;
             }
             
-            .search-input, .filter-select {
+            .search-input-container .form-control,
+            .search-input-container .form-select,
+            .search-input-container .btn {
+                height: 40px;
+            }
+            
+            .search-input-container .form-control {
+                flex: 1 1 100%;
+                min-width: auto;
+                margin-bottom: 0.5rem;
+            }
+            
+            .search-input-container .form-select {
+                flex: 1 1 60%;
                 min-width: auto;
             }
             
-            .issue-details {
+            .search-input-container .clear-btn {
+                flex: 1 1 35%;
+            }
+            
+            .books-container {
                 grid-template-columns: 1fr;
+            }
+            
+            .detail-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .book-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .book-status {
+                margin-left: 0;
+                align-self: flex-start;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-input-container .form-select,
+            .search-input-container .clear-btn {
+                flex: 1 1 100%;
+                margin-bottom: 0.5rem;
             }
         }
     </style>
 </head>
-<body>
-    <nav class="admin-nav">
-        <div class="nav-brand">
-            <i class="fas fa-book"></i>
-            <span>Library Admin</span>
-        </div>
-        <div class="nav-menu">
-            <a href="dashboard.php"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
-            <a href="books.php"><i class="fas fa-book"></i> Books</a>
-            <a href="users.php"><i class="fas fa-users"></i> Users</a>
-            <a href="issue-book.php"><i class="fas fa-hand-holding"></i> Issue</a>
-            <a href="return-book.php" class="active"><i class="fas fa-undo"></i> Return</a>
-            <a href="../includes/logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
-        </div>
-        <div class="nav-toggle">
-            <i class="fas fa-bars"></i>
+<body class="admin-layout">
+    <!-- Admin Navbar -->
+    <nav class="admin-navbar">
+        <div class="navbar-content">
+            <a href="dashboard.php" class="navbar-brand">
+                <i class="fas fa-book-open"></i>
+                <?php echo SITE_NAME; ?>
+            </a>
+            <ul class="navbar-nav">
+                <li><span class="nav-text"><i class="fas fa-user-shield"></i> Welcome, <?php echo htmlspecialchars($_SESSION['user_name']); ?></span></li>
+                <li><a href="../includes/logout.php" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
         </div>
     </nav>
 
-    <div class="main-content">
-        <div class="return-container">
-            <!-- Header Section -->
-            <div class="header-section">
-                <h1><i class="fas fa-undo"></i> Return Books</h1>
-                <p>Process book returns and manage fines</p>
+    <!-- Admin Container -->
+    <div class="admin-container">
+        <!-- Admin Sidebar -->
+        <aside class="admin-sidebar">
+            <ul class="sidebar-nav">
+                <li class="nav-item">
+                    <a href="dashboard.php" class="nav-link">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="books.php" class="nav-link">
+                        <i class="fas fa-book"></i> Manage Books
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="users.php" class="nav-link">
+                        <i class="fas fa-users"></i> Manage Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="issue-book.php" class="nav-link">
+                        <i class="fas fa-hand-holding"></i> Issue Book
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="return-book.php" class="nav-link active">
+                        <i class="fas fa-undo"></i> Return Book
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="reports.php" class="nav-link">
+                        <i class="fas fa-chart-bar"></i> Reports
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="settings.php" class="nav-link">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Admin Main Content -->
+        <main class="admin-main">
+            <!-- Dashboard Header -->
+            <div class="admin-page-header">
+                <h1 class="admin-page-title">
+                    <i class="fas fa-undo"></i> Return Books
+                </h1>
+                <p class="admin-page-description">Process book returns and manage fines</p>
             </div>
 
             <!-- Display Messages -->
@@ -411,177 +605,255 @@ $issued_books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             }
             ?>
 
+            <!-- Statistics Grid -->
             <div class="stats-grid">
+                <div class="stat-card books">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number"><?= $overdue_count ?></h3>
+                        <p class="stat-label">Overdue Books</p>
+                    </div>
+                </div>
+
+                <div class="stat-card users">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number"><?= $due_soon_count ?></h3>
+                        <p class="stat-label">Due Soon</p>
+                    </div>
+                </div>
+
+                <div class="stat-card issued">
+                    <div class="stat-icon">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number"><?= $normal_count ?></h3>
+                        <p class="stat-label">Normal</p>
+                    </div>
+                </div>
+
                 <div class="stat-card overdue">
-                    <h3><?= $overdue_count ?></h3>
-                    <p><i class="fas fa-exclamation-triangle"></i> Overdue Books</p>
-                </div>
-                <div class="stat-card due-soon">
-                    <h3><?= $due_soon_count ?></h3>
-                    <p><i class="fas fa-clock"></i> Due Soon</p>
-                </div>
-                <div class="stat-card normal">
-                    <h3><?= $normal_count ?></h3>
-                    <p><i class="fas fa-check"></i> Normal</p>
-                </div>
-                <div class="stat-card total">
-                    <h3>$<?= number_format($total_fine, 2) ?></h3>
-                    <p><i class="fas fa-dollar-sign"></i> Total Fines</p>
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">$<?= number_format($total_fine, 2) ?></h3>
+                        <p class="stat-label">Total Fines</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- Search and Filter -->
-            <div class="search-bar">
-                <div class="search-controls">
-                    <input type="text" id="searchInput" class="search-input" placeholder="Search by book title, user name, or email...">
-                    <select id="statusFilter" class="filter-select">
-                        <option value="all">All Books</option>
-                        <option value="overdue">Overdue</option>
-                        <option value="due_soon">Due Soon</option>
-                        <option value="normal">Normal</option>
-                    </select>
-                    <button onclick="clearFilters()" class="btn btn-secondary">
-                        <i class="fas fa-times"></i> Clear
-                    </button>
+            <!-- Search and Filters -->
+            <div class="content-card">
+                <div class="content-card-header">
+                    <h3 class="content-card-title">
+                        <i class="fas fa-search"></i> Search & Filter Books
+                    </h3>
+                </div>
+                <div class="content-card-body">
+                    <div class="simple-search-form">
+                        <div class="search-field-group">
+                            <label for="searchInput" class="form-label">Search Books</label>
+                            <div class="search-input-container">
+                                <input 
+                                    type="text" 
+                                    id="searchInput" 
+                                    class="form-control search-field" 
+                                    placeholder="Search by book title, user name, or email..."
+                                >
+                                <select id="statusFilter" class="form-select">
+                                    <option value="all">All Books</option>
+                                    <option value="overdue">Overdue</option>
+                                    <option value="due_soon">Due Soon</option>
+                                    <option value="normal">Normal</option>
+                                </select>
+                                <button onclick="clearFilters()" class="btn btn-secondary clear-btn">
+                                    <i class="fas fa-times"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Books List -->
-            <div class="books-grid" id="booksGrid">
-                <?php if (empty($issued_books)): ?>
-                    <div class="empty-state">
-                        <i class="fas fa-book-open"></i>
-                        <h3>No Issued Books</h3>
-                        <p>There are currently no books issued that need to be returned.</p>
+            <div class="content-card">
+                <div class="content-card-header">
+                    <h2 class="content-card-title">
+                        <i class="fas fa-list"></i> Issued Books for Return
+                    </h2>
+                </div>
+                <div class="content-card-body">
+                    <div id="booksGrid">
+                        <?php if (empty($issued_books)): ?>
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="fas fa-book-open"></i>
+                                </div>
+                                <h3>No Issued Books</h3>
+                                <p>There are currently no books issued that need to be returned.</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="books-container">
+                                <?php foreach ($issued_books as $book): ?>
+                                    <div class="book-item" 
+                                         data-title="<?= strtolower($book['title']) ?>"
+                                         data-user="<?= strtolower($book['name'] . ' ' . $book['email']) ?>"
+                                         data-status="<?= $book['status_class'] ?>">
+                                        
+                                        <div class="book-card <?= $book['status_class'] ?>">
+                                            <div class="book-content">
+                                                <div class="book-info-section">
+                                                    <div class="book-header">
+                                                        <div class="book-info">
+                                                            <h4 class="book-title"><?= htmlspecialchars($book['title']) ?></h4>
+                                                            <div class="book-meta">
+                                                                <span><i class="fas fa-barcode"></i> ISBN: <?= htmlspecialchars($book['isbn']) ?></span>
+                                                                <span><i class="fas fa-user"></i> <?= htmlspecialchars($book['name']) ?></span>
+                                                                <span><i class="fas fa-envelope"></i> <?= htmlspecialchars($book['email']) ?></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="book-status">
+                                                            <?php if ($book['status_class'] === 'overdue'): ?>
+                                                                <span class="badge badge-danger">
+                                                                    <i class="fas fa-exclamation-triangle"></i> Overdue
+                                                                </span>
+                                                            <?php elseif ($book['status_class'] === 'due_soon'): ?>
+                                                                <span class="badge badge-warning">
+                                                                    <i class="fas fa-clock"></i> Due Soon
+                                                                </span>
+                                                            <?php else: ?>
+                                                                <span class="badge badge-success">
+                                                                    <i class="fas fa-check"></i> Normal
+                                                                </span>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="book-details-horizontal">
+                                                        <div class="detail-item-horizontal">
+                                                            <label>Issue Date</label>
+                                                            <span><?= date('M d,<br>Y', strtotime($book['issue_date'])) ?></span>
+                                                        </div>
+                                                        <div class="detail-item-horizontal">
+                                                            <label>Due Date</label>
+                                                            <span><?= date('M d,<br>Y', strtotime($book['due_date'])) ?></span>
+                                                        </div>
+                                                        <div class="detail-item-horizontal">
+                                                            <label>Days <?= $book['days_overdue'] > 0 ? 'Overdue' : 'Remaining' ?></label>
+                                                            <span class="<?= ($book['days_overdue'] > 0) ? 'text-danger' : 'text-success' ?>">
+                                                                <?= $book['days_overdue'] > 0 ? $book['days_overdue'] : abs($book['days_overdue']) ?> days
+                                                            </span>
+                                                        </div>
+                                                        <div class="detail-item-horizontal">
+                                                            <label>Fine Amount</label>
+                                                            <span class="<?= ($book['days_overdue'] > 0) ? 'text-danger' : '' ?>">
+                                                                $<?= number_format(max(0, $book['days_overdue'] * FINE_PER_DAY), 2) ?>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="book-action-section">
+                                                <?php if ($book['days_overdue'] > 0): ?>
+                                                    <div class="alert alert-warning">
+                                                        <i class="fas fa-exclamation-triangle"></i>
+                                                        This book is <?= $book['days_overdue'] ?> day(s) overdue. 
+                                                        Fine: $<?= number_format($book['days_overdue'] * FINE_PER_DAY, 2) ?>
+                                                    </div>
+                                                <?php endif; ?>
+
+                                                <div class="book-actions">
+                                                    <button class="btn btn-primary" 
+                                                            onclick="confirmReturn(<?= $book['issue_id'] ?>, '<?= htmlspecialchars($book['title']) ?>', '<?= htmlspecialchars($book['name']) ?>', <?= max(0, $book['days_overdue'] * FINE_PER_DAY) ?>)">
+                                                        <i class="fas fa-undo"></i> Return Book
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
-                <?php else: ?>
-                    <?php foreach ($issued_books as $book): ?>
-                        <div class="book-card <?= $book['status_class'] ?>" 
-                             data-title="<?= strtolower($book['title']) ?>"
-                             data-user="<?= strtolower($book['name'] . ' ' . $book['email']) ?>"
-                             data-status="<?= $book['status_class'] ?>">
-                            
-                            <div class="book-header">
-                                <div class="book-info">
-                                    <h3 class="book-title"><?= htmlspecialchars($book['title']) ?></h3>
-                                    <div class="book-meta">
-                                        <i class="fas fa-barcode"></i> ISBN: <?= htmlspecialchars($book['isbn']) ?>
-                                    </div>
-                                    <div class="book-meta">
-                                        <i class="fas fa-user"></i> <?= htmlspecialchars($book['name']) ?> (<?= htmlspecialchars($book['email']) ?>)
-                                    </div>
-                                </div>
-                                <span class="status-badge status-<?= $book['status_class'] ?>">
-                                    <?php if ($book['status_class'] === 'overdue'): ?>
-                                        <i class="fas fa-exclamation-triangle"></i> Overdue
-                                    <?php elseif ($book['status_class'] === 'due_soon'): ?>
-                                        <i class="fas fa-clock"></i> Due Soon
-                                    <?php else: ?>
-                                        <i class="fas fa-check"></i> Normal
-                                    <?php endif; ?>
-                                </span>
-                            </div>
-
-                            <div class="issue-details">
-                                <div class="detail-item">
-                                    <div class="detail-label">Issue Date</div>
-                                    <div class="detail-value"><?= date('M d, Y', strtotime($book['issue_date'])) ?></div>
-                                </div>
-                                <div class="detail-item">
-                                    <div class="detail-label">Due Date</div>
-                                    <div class="detail-value"><?= date('M d, Y', strtotime($book['due_date'])) ?></div>
-                                </div>
-                                <div class="detail-item">
-                                    <div class="detail-label">Days <?= $book['days_overdue'] > 0 ? 'Overdue' : 'Remaining' ?></div>
-                                    <div class="detail-value">
-                                        <?= $book['days_overdue'] > 0 ? $book['days_overdue'] : abs($book['days_overdue']) ?>
-                                    </div>
-                                </div>
-                                <div class="detail-item">
-                                    <div class="detail-label">Fine Amount</div>
-                                    <div class="detail-value">
-                                        $<?= number_format(max(0, $book['days_overdue'] * FINE_PER_DAY), 2) ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <?php if ($book['days_overdue'] > 0): ?>
-                                <div class="fine-info">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    This book is <?= $book['days_overdue'] ?> day(s) overdue. 
-                                    Fine: $<?= number_format($book['days_overdue'] * FINE_PER_DAY, 2) ?>
-                                </div>
-                            <?php endif; ?>
-
-                            <button class="return-button" 
-                                    onclick="confirmReturn(<?= $book['issue_id'] ?>, '<?= htmlspecialchars($book['title']) ?>', '<?= htmlspecialchars($book['name']) ?>', <?= max(0, $book['days_overdue'] * FINE_PER_DAY) ?>)">
-                                <i class="fas fa-undo"></i> Return This Book
-                            </button>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                </div>
             </div>
-        </div>
+        </main>
     </div>
 
     <!-- Return Confirmation Modal -->
     <div id="returnModal" class="modal">
         <div class="modal-content">
-            <h2><i class="fas fa-undo"></i> Confirm Book Return</h2>
-            <div id="returnDetails"></div>
-            <form method="POST" style="margin-top: 1.5rem;">
-                <input type="hidden" name="issue_id" id="returnIssueId">
-                <div style="display: flex; gap: 1rem; justify-content: center;">
-                    <button type="button" onclick="closeModal()" class="btn btn-secondary">
-                        <i class="fas fa-times"></i> Cancel
-                    </button>
-                    <button type="submit" name="return_book" class="btn btn-primary">
-                        <i class="fas fa-check"></i> Confirm Return
-                    </button>
-                </div>
-            </form>
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-undo"></i> Confirm Book Return
+                </h3>
+            </div>
+            <div class="modal-body">
+                <div id="returnDetails"></div>
+            </div>
+            <div class="modal-footer">
+                <form method="POST" class="modal-form">
+                    <input type="hidden" name="issue_id" id="returnIssueId">
+                    <div class="modal-buttons">
+                        <button type="button" onclick="closeModal()" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" name="return_book" class="btn btn-primary">
+                            <i class="fas fa-check"></i> Confirm Return
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
-    <script src="../assets/js/script.js"></script>
     <script>
         // Search and Filter functionality
         function filterBooks() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const statusFilter = document.getElementById('statusFilter').value;
-            const bookCards = document.querySelectorAll('.book-card');
+            const bookItems = document.querySelectorAll('.book-item');
             
             let visibleCount = 0;
             
-            bookCards.forEach(card => {
-                const title = card.dataset.title;
-                const user = card.dataset.user;
-                const status = card.dataset.status;
+            bookItems.forEach(item => {
+                const title = item.dataset.title;
+                const user = item.dataset.user;
+                const status = item.dataset.status;
                 
                 const matchesSearch = title.includes(searchTerm) || user.includes(searchTerm);
                 const matchesStatus = statusFilter === 'all' || status === statusFilter;
                 
                 if (matchesSearch && matchesStatus) {
-                    card.style.display = 'block';
+                    item.style.display = 'block';
                     visibleCount++;
                 } else {
-                    card.style.display = 'none';
+                    item.style.display = 'none';
                 }
             });
             
             // Show/hide empty state
             const emptyState = document.querySelector('.empty-state');
-            const booksGrid = document.getElementById('booksGrid');
+            const booksContainer = document.querySelector('.books-container');
             
-            if (visibleCount === 0 && !emptyState) {
+            if (visibleCount === 0 && !emptyState && booksContainer) {
                 const emptyDiv = document.createElement('div');
                 emptyDiv.className = 'empty-state';
                 emptyDiv.innerHTML = `
-                    <i class="fas fa-search"></i>
+                    <div class="empty-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
                     <h3>No Books Found</h3>
                     <p>No books match your current search criteria.</p>
                 `;
-                booksGrid.appendChild(emptyDiv);
+                booksContainer.appendChild(emptyDiv);
             } else if (visibleCount > 0) {
                 const existingEmpty = document.querySelector('.empty-state');
                 if (existingEmpty && existingEmpty.innerHTML.includes('No Books Found')) {
@@ -601,17 +873,19 @@ $issued_books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             document.getElementById('returnIssueId').value = issueId;
             
             const fineText = fineAmount > 0 ? 
-                `<div class="fine-info" style="margin: 1rem 0;">
+                `<div class="alert alert-warning">
                     <i class="fas fa-exclamation-triangle"></i>
                     <strong>Fine Amount: $${fineAmount.toFixed(2)}</strong>
                 </div>` : '';
             
             document.getElementById('returnDetails').innerHTML = `
-                <p><strong>Book:</strong> ${bookTitle}</p>
-                <p><strong>User:</strong> ${userName}</p>
-                <p><strong>Return Date:</strong> ${new Date().toLocaleDateString()}</p>
-                ${fineText}
-                <p>Are you sure you want to process this return?</p>
+                <div class="return-details">
+                    <p><strong>Book:</strong> ${bookTitle}</p>
+                    <p><strong>User:</strong> ${userName}</p>
+                    <p><strong>Return Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    ${fineText}
+                    <p>Are you sure you want to process this return?</p>
+                </div>
             `;
             
             document.getElementById('returnModal').style.display = 'block';
@@ -622,11 +896,11 @@ $issued_books = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
         
         // Event listeners
-        document.getElementById('searchInput').addEventListener('input', filterBooks);
-        document.getElementById('statusFilter').addEventListener('change', filterBooks);
+        document.getElementById('searchInput')?.addEventListener('input', filterBooks);
+        document.getElementById('statusFilter')?.addEventListener('change', filterBooks);
         
         // Close modal on outside click
-        document.getElementById('returnModal').addEventListener('click', function(e) {
+        document.getElementById('returnModal')?.addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModal();
             }

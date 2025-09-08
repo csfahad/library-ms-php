@@ -176,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
                     >
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block mt-4">
+                <button type="submit" class="btn btn-primary btn-block">
                     <i class="fas fa-sign-in-alt"></i> Sign In
                 </button>
             </form>
@@ -267,7 +267,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
                     ></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block mt-4">
+                <button type="submit" class="btn btn-primary btn-block">
                     <i class="fas fa-user-plus"></i> Create Account
                 </button>
             </form>

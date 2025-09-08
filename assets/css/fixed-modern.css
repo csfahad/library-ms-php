@@ -947,14 +947,14 @@ textarea.form-control {
 /* Stats Cards */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
     margin-bottom: 2rem;
 }
 
 .stat-card {
     background: var(--bg-primary);
-    padding: 2rem;
+    padding: 1.25rem;
     border-radius: var(--border-radius-lg);
     border: 2px solid var(--border-color);
     box-shadow: var(--shadow-sm);
@@ -962,8 +962,9 @@ textarea.form-control {
     transition: var(--transition);
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1rem;
     overflow: hidden;
+    min-height: 100px;
 }
 
 .stat-card:hover {
@@ -994,13 +995,13 @@ textarea.form-control {
 
 .stat-icon {
     flex-shrink: 0;
-    width: 70px;
-    height: 70px;
+    width: 50px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: var(--border-radius-lg);
-    font-size: 2rem;
+    font-size: 1.5rem;
     transition: var(--transition);
     background: var(--primary-light);
     color: var(--primary-color);
@@ -1014,13 +1015,17 @@ textarea.form-control {
 
 .stat-content {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 50px;
 }
 
 .stat-number {
-    font-size: 2.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
-    line-height: 1;
+    margin-bottom: 0.125rem;
+    line-height: 1.1;
     color: var(--text-primary);
     transition: var(--transition);
 }
@@ -1030,12 +1035,14 @@ textarea.form-control {
 }
 
 .stat-label {
-    font-size: 1rem;
+    font-size: 0.875rem;
     color: var(--text-secondary);
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     transition: var(--transition);
+    line-height: 1.2;
+    margin: 0;
 }
 
 .stat-card:hover .stat-label {
@@ -1336,8 +1343,8 @@ textarea.form-control {
     }
 
     .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
     }
 
     .col-3,
@@ -1434,7 +1441,8 @@ textarea.form-control {
     }
 
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
     }
 
     .user-type-group {
@@ -1501,18 +1509,19 @@ textarea.form-control {
     }
 
     .stat-card {
-        padding: 1.5rem;
-        gap: 1.25rem;
+        padding: 1rem;
+        gap: 0.75rem;
+        min-height: 80px;
     }
 
     .stat-icon {
-        width: 60px;
-        height: 60px;
-        font-size: 1.75rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
     }
 
     .stat-number {
-        font-size: 2rem;
+        font-size: 1.5rem;
     }
 
     .stat-label {
@@ -1569,6 +1578,30 @@ textarea.form-control {
     .form-control {
         padding: 0.75rem 0.875rem;
         font-size: 0.9rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .stat-card {
+        padding: 0.75rem;
+        min-height: 70px;
+    }
+
+    .stat-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+
+    .stat-number {
+        font-size: 1.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
     }
 }
 
@@ -2124,71 +2157,7 @@ textarea.form-control {
     margin: 0;
 }
 
-/* Stats Cards Grid */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-    margin-bottom: 3rem;
-}
-
-.stats-card {
-    background: var(--bg-primary);
-    border-radius: var(--border-radius-lg);
-    padding: 2rem;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-    position: relative;
-    overflow: hidden;
-}
-
-.stats-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-}
-
-.stats-card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: var(--primary-color);
-}
-
-.stats-card.books::before {
-    background: var(--primary-color);
-}
-
-.stats-card.users::before {
-    background: var(--success-color);
-}
-
-.stats-card.issued::before {
-    background: var(--warning-color);
-}
-
-.stats-card.overdue::before {
-    background: var(--error-color);
-}
-
-.stats-number {
-    font-size: 3rem;
-    font-weight: 800;
-    color: var(--text-primary);
-    line-height: 1;
-    margin-bottom: 0.5rem;
-}
-
-.stats-label {
-    color: var(--text-secondary);
-    font-weight: 600;
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-}
+/* Stats Cards Grid - Alternate Layout (removed duplicate) */
 
 /* Quick Actions */
 .quick-actions-card {
@@ -2704,7 +2673,7 @@ textarea.form-control {
     background: var(--bg-primary);
     border-radius: var(--border-radius-lg);
     border: 1px solid var(--border-color);
-    padding: 2rem;
+    padding: 1rem;
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
 }
@@ -2887,7 +2856,8 @@ textarea.form-control {
     }
 
     .stats-grid {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
     }
 
     .two-column-grid {
@@ -2989,29 +2959,28 @@ textarea.form-control {
     }
 
     .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
     }
 
     .stat-card {
-        padding: 1.25rem;
-        gap: 1rem;
-        flex-direction: column;
-        text-align: center;
+        padding: 1rem;
+        gap: 0.75rem;
+        min-height: 80px;
     }
 
     .stat-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.5rem;
+        width: 40px;
+        height: 40px;
+        font-size: 1.25rem;
     }
 
     .stat-number {
-        font-size: 1.75rem;
+        font-size: 1.5rem;
     }
 
     .stat-label {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
     }
 }
 

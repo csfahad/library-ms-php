@@ -80,16 +80,6 @@ $pageTitle = 'Admin Dashboard';
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="issued-books.php" class="nav-link">
-                        <i class="fas fa-list"></i> Issued Books
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="overdue-books.php" class="nav-link">
-                        <i class="fas fa-exclamation-triangle"></i> Overdue Books
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="reports.php" class="nav-link">
                         <i class="fas fa-chart-bar"></i> Reports
                     </a>
@@ -173,11 +163,11 @@ $pageTitle = 'Admin Dashboard';
 
                     <a href="users.php" class="action-card">
                         <div class="action-icon">
-                            <i class="fas fa-user-plus"></i>
+                            <i class="fas fa-users"></i>
                         </div>
                         <div class="action-content">
-                            <h4>Register User</h4>
-                            <p>Add new library member</p>
+                            <h4>Manage Users</h4>
+                            <p>Manage existing users</p>
                         </div>
                     </a>
 

@@ -167,16 +167,6 @@ $pageTitle = 'Manage Users';
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="issued-books.php" class="nav-link">
-                        <i class="fas fa-list"></i> Issued Books
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="overdue-books.php" class="nav-link">
-                        <i class="fas fa-exclamation-triangle"></i> Overdue Books
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a href="reports.php" class="nav-link">
                         <i class="fas fa-chart-bar"></i> Reports
                     </a>
