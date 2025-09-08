@@ -346,7 +346,7 @@ function getAllIssuedBooks($status = 'issued') {
     try {
         $db = getDB();
         
-        $sql = "SELECT ib.*, u.name as user_name, u.email, b.title, b.author, b.isbn 
+        $sql = "SELECT ib.*, u.name as user_name, u.email, b.title as book_title, b.author, b.isbn 
                 FROM issued_books ib 
                 JOIN users u ON ib.user_id = u.user_id 
                 JOIN books b ON ib.book_id = b.book_id 
@@ -373,7 +373,22 @@ function getOverdueBooks() {
     try {
         $db = getDB();
         
-        $sql = "SELECT * FROM overdue_books";
+        $sql = "SELECT 
+                    ib.issue_id,
+                    u.name AS user_name,
+                    u.email,
+                    b.title as book_title,
+                    b.author,
+                    ib.issue_date,
+                    ib.due_date,
+                    DATEDIFF(CURRENT_DATE, ib.due_date) AS days_overdue,
+                    (DATEDIFF(CURRENT_DATE, ib.due_date) * 2.00) AS calculated_fine
+                FROM issued_books ib
+                JOIN users u ON ib.user_id = u.user_id
+                JOIN books b ON ib.book_id = b.book_id
+                WHERE ib.status = 'issued' 
+                AND ib.due_date < CURRENT_DATE";
+        
         $stmt = $db->prepare($sql);
         $stmt->execute();
         
