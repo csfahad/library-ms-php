@@ -7,6 +7,25 @@
 require_once dirname(__DIR__) . '/config/database.php';
 
 /**
+ * Get system setting from database
+ * @param string $key Setting key
+ * @param string $default Default value if setting doesn't exist
+ * @return string Setting value or default
+ */
+function getSetting($key, $default = '') {
+    try {
+        $pdo = getDB();
+        $stmt = $pdo->prepare("SELECT setting_value FROM system_settings WHERE setting_key = ?");
+        $stmt->execute([$key]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ? $result['setting_value'] : $default;
+    } catch (Exception $e) {
+        error_log("getSetting error for key '$key': " . $e->getMessage());
+        return $default;
+    }
+}
+
+/**
  * Get all books with optional search and pagination
  * @param string $search
  * @param int $limit
@@ -225,13 +244,15 @@ function issueBook($userId, $bookId) {
         $countStmt->bindParam(':user_id', $userId);
         $countStmt->execute();
         
-        if ($countStmt->fetchColumn() >= MAX_BOOKS_PER_USER) {
-            return "User has reached maximum books limit (" . MAX_BOOKS_PER_USER . ")";
+        $maxBooksPerUser = getSetting('max_books_per_user', '3');
+        if ($countStmt->fetchColumn() >= $maxBooksPerUser) {
+            return "User has reached maximum books limit ($maxBooksPerUser)";
         }
         
         // Issue the book
         $issueDate = date('Y-m-d');
-        $dueDate = date('Y-m-d', strtotime('+' . DEFAULT_ISSUE_DAYS . ' days'));
+        $issueDays = getSetting('issue_duration_days', '14');
+        $dueDate = date('Y-m-d', strtotime('+' . $issueDays . ' days'));
         
         $sql = "INSERT INTO issued_books (user_id, book_id, issue_date, due_date, status) 
                 VALUES (:user_id, :book_id, :issue_date, :due_date, 'issued')";
@@ -280,7 +301,8 @@ function returnBook($issueId) {
         
         if ($returnDate > $issue['due_date']) {
             $daysOverdue = (strtotime($returnDate) - strtotime($issue['due_date'])) / (60 * 60 * 24);
-            $fine = $daysOverdue * FINE_PER_DAY;
+            $finePerDay = getSetting('fine_per_day', '2.00');
+            $fine = $daysOverdue * $finePerDay;
         }
         
         // Update issue record

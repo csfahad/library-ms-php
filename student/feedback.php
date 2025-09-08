@@ -82,7 +82,7 @@ try {
                     <div class="logo">
                         <i class="fas fa-book-open"></i>
                     </div>
-                    Library MS
+                    <?php echo htmlspecialchars(getSetting('library_name', 'Library MS')); ?>
                 </a>
                 <ul class="navbar-nav">
                     <li><a href="dashboard.php" class="nav-link"><i class="fas fa-home"></i> Dashboard</a></li>
@@ -256,22 +256,21 @@ try {
                                     <i class="fas fa-envelope text-primary"></i>
                                     <div>
                                         <strong>Email</strong>
-                                        <br>library@university.edu
+                                        <br><?php echo htmlspecialchars(getSetting('library_email', 'library@university.edu')); ?>
                                     </div>
                                 </div>
                                 <div class="contact-item mb-3">
                                     <i class="fas fa-phone text-success"></i>
                                     <div>
                                         <strong>Phone</strong>
-                                        <br>(555) 123-4567
+                                        <br><?php echo htmlspecialchars(getSetting('library_phone', '(555) 123-4567')); ?>
                                     </div>
                                 </div>
                                 <div class="contact-item mb-3">
                                     <i class="fas fa-map-marker-alt text-danger"></i>
                                     <div>
                                         <strong>Visit Us</strong>
-                                        <br>Main Library, Room 101
-                                        <br>University Campus
+                                        <br><?php echo nl2br(htmlspecialchars(getSetting('library_address', 'Main Library, Room 101\nUniversity Campus'))); ?>
                                     </div>
                                 </div>
                                 <div class="contact-item">

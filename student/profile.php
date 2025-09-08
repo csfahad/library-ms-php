@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="logo">
                         <i class="fas fa-book-open"></i>
                     </div>
-                    Library MS
+                    <?php echo htmlspecialchars(getSetting('library_name', 'Library MS')); ?>
                 </a>
                 <ul class="navbar-nav">
                     <li><a href="dashboard.php" class="nav-link"><i class="fas fa-home"></i> Dashboard</a></li>
@@ -220,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     ><?php echo htmlspecialchars($currentUser['address'] ?? ''); ?></textarea>
                                 </div>
 
-                                <hr class="my-4">
+                                <hr class="my-4 mb-4">
 
                                 <!-- Password Change Section -->
                                 <h4 class="mb-3">

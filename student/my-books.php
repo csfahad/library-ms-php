@@ -36,7 +36,7 @@ $issuedBooks = getUserIssuedBooks($currentUser['id']);
                     <div class="logo">
                         <i class="fas fa-book-open"></i>
                     </div>
-                    Library MS
+                    <?php echo htmlspecialchars(getSetting('library_name', 'Library MS')); ?>
                 </a>
                 <ul class="navbar-nav">
                     <li><a href="dashboard.php" class="nav-link"><i class="fas fa-home"></i> Dashboard</a></li>
@@ -190,7 +190,7 @@ $issuedBooks = getUserIssuedBooks($currentUser['id']);
                             <div class="col-md-6">
                                 <h5>Borrowing Period</h5>
                                 <ul class="text-secondary">
-                                    <li>Regular books: 14 days</li>
+                                    <li>Regular books: <?php echo getSetting('issue_duration_days', '14'); ?> days</li>
                                     <li>Reference books: 7 days</li>
                                     <li>Magazines: 3 days</li>
                                 </ul>
@@ -198,7 +198,7 @@ $issuedBooks = getUserIssuedBooks($currentUser['id']);
                             <div class="col-md-6">
                                 <h5>Renewal Policy</h5>
                                 <ul class="text-secondary">
-                                    <li>Books can be renewed up to 2 times</li>
+                                    <li>Books can be renewed up to <?php echo getSetting('renewal_limit', '2'); ?> times</li>
                                     <li>No renewal for overdue books</li>
                                     <li>Renewal period: Same as original borrowing period</li>
                                 </ul>
@@ -208,7 +208,7 @@ $issuedBooks = getUserIssuedBooks($currentUser['id']);
                             <div class="col-md-6">
                                 <h5>Fine Structure</h5>
                                 <ul class="text-secondary">
-                                    <li>Overdue fine: $2.00 per day</li>
+                                    <li>Overdue fine: $<?php echo number_format(getSetting('fine_per_day', '2.00'), 2); ?> per day</li>
                                     <li>Lost book: Full replacement cost</li>
                                     <li>Damaged book: Varies by damage</li>
                                 </ul>

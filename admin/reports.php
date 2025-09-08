@@ -7,6 +7,9 @@ requireAdmin();
 // Initialize database connection
 $pdo = getDB();
 
+// Get dynamic settings
+$finePerDay = getSetting('fine_per_day', '2.00');
+
 // Handle report generation
 $report_type = $_GET['type'] ?? 'overview';
 $date_from = $_GET['date_from'] ?? date('Y-m-01'); // First day of current month
@@ -104,7 +107,7 @@ switch ($report_type) {
         
         $stmt = $pdo->query("SELECT ib.*, b.title, b.isbn, b.author, u.name, u.email, u.phone,
                             DATEDIFF(NOW(), ib.due_date) as days_overdue,
-                            (DATEDIFF(NOW(), ib.due_date) * " . FINE_PER_DAY . ") as fine_amount
+                            (DATEDIFF(NOW(), ib.due_date) * $finePerDay) as fine_amount
                             FROM issued_books ib
                             JOIN books b ON ib.book_id = b.book_id
                             JOIN users u ON ib.user_id = u.user_id
@@ -164,7 +167,7 @@ switch ($report_type) {
         
         // Outstanding fines
         $stmt = $pdo->query("SELECT u.name, u.email, u.phone,
-                            SUM(DATEDIFF(NOW(), ib.due_date) * " . FINE_PER_DAY . ") as outstanding_fine,
+                            SUM(DATEDIFF(NOW(), ib.due_date) * $finePerDay) as outstanding_fine,
                             COUNT(*) as overdue_books
                             FROM issued_books ib
                             JOIN users u ON ib.user_id = u.user_id

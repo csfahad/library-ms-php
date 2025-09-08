@@ -32,7 +32,8 @@ foreach ($issuedBooks as $book) {
     if (strtotime($book['due_date']) < time()) {
         $stats['overdue_books']++;
         $daysOverdue = ceil((time() - strtotime($book['due_date'])) / (60 * 60 * 24));
-        $stats['total_fine'] += $daysOverdue * FINE_PER_DAY;
+        $finePerDay = getSetting('fine_per_day', '2.00');
+        $stats['total_fine'] += $daysOverdue * $finePerDay;
     }
 }
 ?>
@@ -55,7 +56,7 @@ foreach ($issuedBooks as $book) {
                     <div class="logo">
                         <i class="fas fa-book-open"></i>
                     </div>
-                    Library MS
+                    <?php echo htmlspecialchars(getSetting('library_name', 'Library MS')); ?>
                 </a>
                 <ul class="navbar-nav">
                     <li><a href="dashboard.php" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a></li>
@@ -271,10 +272,10 @@ foreach ($issuedBooks as $book) {
                                 </div>
                             </div>
                             <hr>
-                            <div class="contact-info">
-                                <p class="mb-2"><i class="fas fa-phone text-primary"></i> (555) 123-4567</p>
-                                <p class="mb-2"><i class="fas fa-envelope text-primary"></i> library@university.edu</p>
-                                <p class="mb-0"><i class="fas fa-map-marker-alt text-primary"></i> Main Library, Room 101</p>
+                            <div class="contact-info mt-2">
+                                <p class="mb-2"><i class="fas fa-phone text-primary"></i> <?php echo htmlspecialchars(getSetting('library_phone', '(555) 123-4567')); ?></p>
+                                <p class="mb-2"><i class="fas fa-envelope text-primary"></i> <?php echo htmlspecialchars(getSetting('library_email', 'library@university.edu')); ?></p>
+                                <p class="mb-0"><i class="fas fa-map-marker-alt text-primary"></i> <?php echo htmlspecialchars(getSetting('library_address', 'Main Library, Room 101')); ?></p>
                             </div>
                         </div>
                     </div>

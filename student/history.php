@@ -36,7 +36,7 @@ $history = getUserBorrowingHistory($currentUser['user_id']);
                     <div class="logo">
                         <i class="fas fa-book-open"></i>
                     </div>
-                    Library MS
+                    <?php echo htmlspecialchars(getSetting('library_name', 'Library MS')); ?>
                 </a>
                 <ul class="navbar-nav">
                     <li><a href="dashboard.php" class="nav-link"><i class="fas fa-home"></i> Dashboard</a></li>

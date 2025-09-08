@@ -6,6 +6,7 @@
 
 require_once 'config/database.php';
 require_once 'includes/auth.php';
+require_once 'includes/functions.php';
 
 // If user is already logged in, redirect to appropriate dashboard
 if (isLoggedIn()) {
@@ -99,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
                 <div class="logo">
                     <i class="fas fa-book-open"></i>
                 </div>
-                <h1>Library Management System</h1>
+                <h1><?php echo htmlspecialchars(getSetting('library_name', 'Library Management System')); ?></h1>
                 <p>Modern, Secure & Efficient Library Solution</p>
             </div>
 
@@ -279,7 +280,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
                     Admin: <code>admin@lms.com</code> / <code>password</code><br>
                     Student: <code>student@lms.com</code> / <code>password</code>
                 </p>
-                <p>&copy; <?php echo date('Y'); ?> Library Management System. All rights reserved.</p>
+                <p>&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars(getSetting('library_name', 'Library Management System')); ?>. All rights reserved.</p>
             </div>
         </div>
     </div>

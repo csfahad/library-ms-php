@@ -289,9 +289,9 @@ $pageTitle = 'Admin Dashboard';
                     <div class="info-section">
                         <h5>Library Settings</h5>
                         <ul class="info-list">
-                            <li><strong>Max Books per User:</strong> <span class="info-value">3</span></li>
-                            <li><strong>Default Issue Days:</strong> <span class="info-value">14</span></li>
-                            <li><strong>Fine per Day:</strong> <span class="info-value">$2.00</span></li>
+                            <li><strong>Max Books per User:</strong> <span class="info-value"><?php echo getSetting('max_books_per_user', '3'); ?></span></li>
+                            <li><strong>Default Issue Days:</strong> <span class="info-value"><?php echo getSetting('issue_duration_days', '14'); ?></span></li>
+                            <li><strong>Fine per Day:</strong> <span class="info-value">$<?php echo number_format(getSetting('fine_per_day', '2.00'), 2); ?></span></li>
                         </ul>
                     </div>
                     <div class="info-section">
