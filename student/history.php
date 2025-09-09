@@ -15,7 +15,7 @@ requireLogin();
 $currentUser = getCurrentUser();
 
 // Get user's borrowing history
-$history = getUserBorrowingHistory($currentUser['user_id']);
+$history = getUserBorrowingHistory($currentUser['user_id'], 100); // Get up to 100 records
 ?>
 
 <!DOCTYPE html>
@@ -92,7 +92,6 @@ $history = getUserBorrowingHistory($currentUser['user_id']);
                             <div class="card-body text-center">
                                 <div class="stat-number text-primary"><?php echo $totalBorrowed; ?></div>
                                 <div class="stat-label">Total Borrowed</div>
-                                <i class="stat-icon fas fa-book"></i>
                             </div>
                         </div>
                     </div>
@@ -102,7 +101,6 @@ $history = getUserBorrowingHistory($currentUser['user_id']);
                             <div class="card-body text-center">
                                 <div class="stat-number text-success"><?php echo $totalReturned; ?></div>
                                 <div class="stat-label">Returned</div>
-                                <i class="stat-icon fas fa-check-circle"></i>
                             </div>
                         </div>
                     </div>
@@ -112,7 +110,6 @@ $history = getUserBorrowingHistory($currentUser['user_id']);
                             <div class="card-body text-center">
                                 <div class="stat-number text-warning"><?php echo $totalOverdue; ?></div>
                                 <div class="stat-label">Currently Overdue</div>
-                                <i class="stat-icon fas fa-exclamation-triangle"></i>
                             </div>
                         </div>
                     </div>
@@ -122,7 +119,6 @@ $history = getUserBorrowingHistory($currentUser['user_id']);
                             <div class="card-body text-center">
                                 <div class="stat-number text-danger">$<?php echo number_format($totalFines, 2); ?></div>
                                 <div class="stat-label">Total Fines</div>
-                                <i class="stat-icon fas fa-dollar-sign"></i>
                             </div>
                         </div>
                     </div>
@@ -130,8 +126,8 @@ $history = getUserBorrowingHistory($currentUser['user_id']);
 
                 <!-- History Table -->
                 <div class="card">
-                    <div class="card-header">
-                        <h3 class="card-title">Complete Borrowing History</h3>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h3 class="card-title mb-0">Complete Borrowing History</h3>
                         <div class="card-actions">
                             <button class="btn btn-outline-primary btn-sm" onclick="exportHistory()">
                                 <i class="fas fa-download"></i> Export
@@ -348,16 +344,69 @@ $history = getUserBorrowingHistory($currentUser['user_id']);
         .card-actions {
             display: flex;
             gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .card-header.d-flex {
+            padding: 1rem;
+        }
+        
+        .card-title.mb-0 {
+            margin-bottom: 0;
         }
         
         .stat-card {
             position: relative;
             transition: var(--transition);
+            position: static;
+            z-index: auto;
         }
         
         .stat-card:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
+        }
+        
+        .stat-card::before,
+        .stat-card::after {
+            display: none !important;
+        }
+        
+        .card {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card::before,
+        .card::after {
+            display: none !important;
+        }
+        
+        .stat-card .card-body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .stat-card .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .stat-card .stat-label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            opacity: 0.8;
+            margin: 0;
+            text-align: center;
+            width: 100%;
         }
     </style>
 </body>

@@ -1201,7 +1201,6 @@ textarea.form-control {
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-sm);
     overflow: hidden;
-    margin-bottom: 1.5rem;
 }
 
 .table {

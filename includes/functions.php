@@ -755,7 +755,7 @@ function getUserBorrowingHistory($userId, $limit = 10, $offset = 0) {
         
         $sql = "SELECT ib.*, b.title, b.author, b.isbn, b.category
                 FROM issued_books ib
-                JOIN books b ON ib.book_id = b.id
+                JOIN books b ON ib.book_id = b.book_id
                 WHERE ib.user_id = :user_id
                 ORDER BY ib.issue_date DESC
                 LIMIT :limit OFFSET :offset";

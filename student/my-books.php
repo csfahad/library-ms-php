@@ -751,7 +751,7 @@ $rejectedRequests = array_filter($bookRequests, function($req) { return $req['st
         }
 
         .stat-number {
-            font-size: 2rem;
+            font-size: 2.5rem;
             font-weight: bold;
         }
 
