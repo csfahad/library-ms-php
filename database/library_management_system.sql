@@ -95,6 +95,31 @@ CREATE TABLE system_settings (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- Book Requests Table
+CREATE TABLE book_requests (
+    request_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    book_id INT NOT NULL,
+    request_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    status ENUM('pending', 'approved', 'rejected', 'issued', 'returned') DEFAULT 'pending',
+    approved_by INT NULL,
+    approved_date TIMESTAMP NULL,
+    issue_date TIMESTAMP NULL,
+    due_date TIMESTAMP NULL,
+    return_date TIMESTAMP NULL,
+    fine DECIMAL(10,2) DEFAULT 0.00,
+    admin_notes TEXT,
+    rejection_reason TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (book_id) REFERENCES books(book_id) ON DELETE CASCADE,
+    FOREIGN KEY (approved_by) REFERENCES admin(admin_id) ON DELETE SET NULL,
+    INDEX idx_user_status (user_id, status),
+    INDEX idx_status_date (status, request_date),
+    INDEX idx_book_status (book_id, status)
+);
+
 -- Insert Default Admin
 INSERT INTO admin (username, password, full_name, contact_email) 
 VALUES ('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System Administrator', 'admin@library.com');

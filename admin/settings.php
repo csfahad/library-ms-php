@@ -108,6 +108,11 @@ try {
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a href="book-requests.php" class="nav-link">
+                        <i class="fas fa-hand-paper"></i> Book Requests
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="users.php" class="nav-link">
                         <i class="fas fa-users"></i> Manage Users
                     </a>

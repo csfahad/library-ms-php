@@ -367,6 +367,7 @@ textarea.form-control {
 
 .btn-primary:hover {
     background: var(--primary-hover);
+    color: #fff;
     transform: translateY(-1px);
     box-shadow: var(--shadow-md);
 }
@@ -3258,6 +3259,7 @@ textarea.form-control {
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    margin-bottom: 10px;
 }
 
 .card-body {

@@ -630,7 +630,7 @@ function searchBooks($query = '', $category = '', $availability = '', $limit = 1
         $db = getDB();
         
         $sql = "SELECT b.*,
-                (b.quantity - COALESCE(issued.issued_count, 0)) as available_copies,
+                GREATEST(0, b.quantity - COALESCE(issued.issued_count, 0)) as available_quantity,
                 COALESCE(issued.issued_count, 0) as issued_count
                 FROM books b 
                 LEFT JOIN (
@@ -834,7 +834,7 @@ function getBookCategories() {
         
         $categories = [];
         while ($row = $stmt->fetch()) {
-            $categories[] = $row['category'];
+            $categories[] = ['category' => $row['category']];
         }
         
         return $categories;
@@ -873,6 +873,261 @@ function getBooksInCirculation() {
         return (int)$result['total'];
     } catch (Exception $e) {
         error_log("Get books in circulation error: " . $e->getMessage());
+        return 0;
+    }
+}
+
+/**
+ * Submit a book request by student
+ * @param int $userId
+ * @param int $bookId
+ * @return array ['success' => bool, 'message' => string]
+ */
+function submitBookRequest($userId, $bookId) {
+    try {
+        $db = getDB();
+        
+        // Check if book is available
+        $stmt = $db->prepare("SELECT available_quantity, title FROM books WHERE book_id = :book_id");
+        $stmt->bindParam(':book_id', $bookId, PDO::PARAM_INT);
+        $stmt->execute();
+        $book = $stmt->fetch();
+        
+        if (!$book) {
+            return ['success' => false, 'message' => 'Book not found.'];
+        }
+        
+        if ($book['available_quantity'] <= 0) {
+            return ['success' => false, 'message' => 'Book is currently not available.'];
+        }
+        
+        // Check user's current issued books count (limit check)
+        $stmt = $db->prepare("SELECT COUNT(*) as count FROM book_requests WHERE user_id = :user_id AND status IN ('approved', 'issued')");
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->execute();
+        $currentCount = $stmt->fetch()['count'];
+        
+        $maxBooks = getSetting('max_books_per_user', MAX_BOOKS_PER_USER);
+        if ($currentCount >= $maxBooks) {
+            return ['success' => false, 'message' => "You have reached the maximum limit of $maxBooks books."];
+        }
+        
+        // Insert book request
+        $stmt = $db->prepare("INSERT INTO book_requests (user_id, book_id) VALUES (:user_id, :book_id)");
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->bindParam(':book_id', $bookId, PDO::PARAM_INT);
+        
+        if ($stmt->execute()) {
+            return ['success' => true, 'message' => 'Book request submitted successfully! Wait for admin approval.'];
+        } else {
+            return ['success' => false, 'message' => 'Failed to submit request. Please try again.'];
+        }
+        
+    } catch (Exception $e) {
+        error_log("Submit book request error: " . $e->getMessage());
+        if (strpos($e->getMessage(), 'already has pending request') !== false) {
+            return ['success' => false, 'message' => 'You already have a pending request or active issue for this book.'];
+        }
+        return ['success' => false, 'message' => 'An error occurred while submitting your request.'];
+    }
+}
+
+/**
+ * Get user's book requests
+ * @param int $userId
+ * @param string $status - optional filter by status
+ * @return array
+ */
+function getUserBookRequests($userId, $status = '') {
+    try {
+        $db = getDB();
+        
+        $sql = "SELECT br.*, b.title, b.author, b.isbn, b.category
+                FROM book_requests br 
+                JOIN books b ON br.book_id = b.book_id 
+                WHERE br.user_id = :user_id";
+        
+        $params = ['user_id' => $userId];
+        
+        if (!empty($status)) {
+            $sql .= " AND br.status = :status";
+            $params['status'] = $status;
+        }
+        
+        $sql .= " ORDER BY br.request_date DESC";
+        
+        $stmt = $db->prepare($sql);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":$key", $value);
+        }
+        
+        $stmt->execute();
+        return $stmt->fetchAll();
+        
+    } catch (Exception $e) {
+        error_log("Get user book requests error: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Get pending book requests for admin
+ * @param int $limit
+ * @param int $offset
+ * @return array
+ */
+function getPendingBookRequests($limit = 50, $offset = 0) {
+    try {
+        $db = getDB();
+        
+        $stmt = $db->prepare("SELECT * FROM pending_book_requests LIMIT :limit OFFSET :offset");
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll();
+        
+    } catch (Exception $e) {
+        error_log("Get pending book requests error: " . $e->getMessage());
+        return [];
+    }
+}
+
+/**
+ * Approve a book request
+ * @param int $requestId
+ * @param int $adminId
+ * @param string $notes
+ * @return array ['success' => bool, 'message' => string]
+ */
+function approveBookRequest($requestId, $adminId, $notes = '') {
+    try {
+        $db = getDB();
+        
+        // Get request details
+        $stmt = $db->prepare("SELECT br.*, b.available_quantity FROM book_requests br 
+                             JOIN books b ON br.book_id = b.book_id 
+                             WHERE br.request_id = :request_id AND br.status = 'pending'");
+        $stmt->bindParam(':request_id', $requestId, PDO::PARAM_INT);
+        $stmt->execute();
+        $request = $stmt->fetch();
+        
+        if (!$request) {
+            return ['success' => false, 'message' => 'Request not found or already processed.'];
+        }
+        
+        if ($request['available_quantity'] <= 0) {
+            return ['success' => false, 'message' => 'Book is no longer available.'];
+        }
+        
+        // Calculate due date
+        $issueDays = getSetting('default_issue_days', DEFAULT_ISSUE_DAYS);
+        $dueDate = date('Y-m-d', strtotime("+$issueDays days"));
+        
+        // Update request status to issued
+        $stmt = $db->prepare("UPDATE book_requests SET 
+                             status = 'issued', 
+                             approved_by = :admin_id, 
+                             approved_date = NOW(), 
+                             issue_date = NOW(), 
+                             due_date = :due_date,
+                             admin_notes = :notes 
+                             WHERE request_id = :request_id");
+        
+        $stmt->bindParam(':admin_id', $adminId, PDO::PARAM_INT);
+        $stmt->bindParam(':due_date', $dueDate);
+        $stmt->bindParam(':notes', $notes);
+        $stmt->bindParam(':request_id', $requestId, PDO::PARAM_INT);
+        
+        if ($stmt->execute()) {
+            return ['success' => true, 'message' => 'Book request approved and issued successfully.'];
+        } else {
+            return ['success' => false, 'message' => 'Failed to approve request.'];
+        }
+        
+    } catch (Exception $e) {
+        error_log("Approve book request error: " . $e->getMessage());
+        return ['success' => false, 'message' => 'An error occurred while processing the request.'];
+    }
+}
+
+/**
+ * Reject a book request
+ * @param int $requestId
+ * @param int $adminId
+ * @param string $reason
+ * @return array ['success' => bool, 'message' => string]
+ */
+function rejectBookRequest($requestId, $adminId, $reason = '') {
+    try {
+        $db = getDB();
+        
+        $stmt = $db->prepare("UPDATE book_requests SET 
+                             status = 'rejected', 
+                             approved_by = :admin_id, 
+                             approved_date = NOW(), 
+                             rejection_reason = :reason 
+                             WHERE request_id = :request_id AND status = 'pending'");
+        
+        $stmt->bindParam(':admin_id', $adminId, PDO::PARAM_INT);
+        $stmt->bindParam(':reason', $reason);
+        $stmt->bindParam(':request_id', $requestId, PDO::PARAM_INT);
+        
+        if ($stmt->execute() && $stmt->rowCount() > 0) {
+            return ['success' => true, 'message' => 'Book request rejected successfully.'];
+        } else {
+            return ['success' => false, 'message' => 'Request not found or already processed.'];
+        }
+        
+    } catch (Exception $e) {
+        error_log("Reject book request error: " . $e->getMessage());
+        return ['success' => false, 'message' => 'An error occurred while processing the request.'];
+    }
+}
+
+/**
+ * Return a book (mark request as returned)
+ * @param int $requestId
+ * @param float $fine
+ * @return array ['success' => bool, 'message' => string]
+ */
+function returnBookRequest($requestId, $fine = 0.00) {
+    try {
+        $db = getDB();
+        
+        $stmt = $db->prepare("UPDATE book_requests SET 
+                             status = 'returned', 
+                             return_date = NOW(), 
+                             fine = :fine 
+                             WHERE request_id = :request_id AND status = 'issued'");
+        
+        $stmt->bindParam(':fine', $fine);
+        $stmt->bindParam(':request_id', $requestId, PDO::PARAM_INT);
+        
+        if ($stmt->execute() && $stmt->rowCount() > 0) {
+            return ['success' => true, 'message' => 'Book returned successfully.'];
+        } else {
+            return ['success' => false, 'message' => 'Book not found or already returned.'];
+        }
+        
+    } catch (Exception $e) {
+        error_log("Return book error: " . $e->getMessage());
+        return ['success' => false, 'message' => 'An error occurred while returning the book.'];
+    }
+}
+
+/**
+ * Get count of pending requests
+ * @return int
+ */
+function getPendingRequestsCount() {
+    try {
+        $db = getDB();
+        $stmt = $db->query("SELECT COUNT(*) as count FROM book_requests WHERE status = 'pending'");
+        $result = $stmt->fetch();
+        return (int)$result['count'];
+    } catch (Exception $e) {
+        error_log("Get pending requests count error: " . $e->getMessage());
         return 0;
     }
 }
