@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
 </head>
 <body>
     <div class="login-container">
-        <div class="auth-card glass">
+        <div class="auth-card">
             <div class="auth-header">
                 <div class="logo">
                     <i class="fas fa-book-open"></i>
@@ -186,86 +186,98 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
             <form class="auth-form" id="register-form" method="POST" action="">
                 <input type="hidden" name="register" value="1">
                 
-                <div class="form-group">
-                    <label for="reg_name" class="form-label">
-                        <i class="fas fa-user"></i> Full Name
-                    </label>
-                    <input 
-                        type="text" 
-                        id="reg_name" 
-                        name="name" 
-                        class="form-control" 
-                        placeholder="Enter your full name"
-                        required
-                    >
+                <!-- Row 1: Name and Email -->
+                <div class="register-form-row">
+                    <div class="form-group">
+                        <label for="reg_name" class="form-label">
+                            <i class="fas fa-user"></i> Full Name
+                        </label>
+                        <input 
+                            type="text" 
+                            id="reg_name" 
+                            name="name" 
+                            class="form-control" 
+                            placeholder="Enter your full name"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg_email" class="form-label">
+                            <i class="fas fa-envelope"></i> Email Address
+                        </label>
+                        <input 
+                            type="email" 
+                            id="reg_email" 
+                            name="email" 
+                            class="form-control" 
+                            placeholder="Enter your email address"
+                            required
+                        >
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="reg_email" class="form-label">
-                        <i class="fas fa-envelope"></i> Email Address
-                    </label>
-                    <input 
-                        type="email" 
-                        id="reg_email" 
-                        name="email" 
-                        class="form-control" 
-                        placeholder="Enter your email address"
-                        required
-                    >
+                <!-- Row 2: Password and Confirm Password -->
+                <div class="register-form-row">
+                    <div class="form-group">
+                        <label for="reg_password" class="form-label">
+                            <i class="fas fa-lock"></i> Password
+                        </label>
+                        <input 
+                            type="password" 
+                            id="reg_password" 
+                            name="password" 
+                            class="form-control" 
+                            placeholder="Choose a strong password"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reg_confirm_password" class="form-label">
+                            <i class="fas fa-lock"></i> Confirm Password
+                        </label>
+                        <input 
+                            type="password" 
+                            id="reg_confirm_password" 
+                            name="confirm_password" 
+                            class="form-control" 
+                            placeholder="Confirm your password"
+                            required
+                        >
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="reg_password" class="form-label">
-                        <i class="fas fa-lock"></i> Password
-                    </label>
-                    <input 
-                        type="password" 
-                        id="reg_password" 
-                        name="password" 
-                        class="form-control" 
-                        placeholder="Choose a strong password"
-                        required
-                    >
+                <!-- Row 3: Phone (full width) -->
+                <div class="register-form-full-width">
+                    <div class="form-group">
+                        <label for="reg_phone" class="form-label">
+                            <i class="fas fa-phone"></i> Phone Number (Optional)
+                        </label>
+                        <input 
+                            type="tel" 
+                            id="reg_phone" 
+                            name="phone" 
+                            class="form-control" 
+                            placeholder="Enter your phone number"
+                        >
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="reg_confirm_password" class="form-label">
-                        <i class="fas fa-lock"></i> Confirm Password
-                    </label>
-                    <input 
-                        type="password" 
-                        id="reg_confirm_password" 
-                        name="confirm_password" 
-                        class="form-control" 
-                        placeholder="Confirm your password"
-                        required
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="reg_phone" class="form-label">
-                        <i class="fas fa-phone"></i> Phone Number (Optional)
-                    </label>
-                    <input 
-                        type="tel" 
-                        id="reg_phone" 
-                        name="phone" 
-                        class="form-control" 
-                        placeholder="Enter your phone number"
-                    >
-                </div>
-
-                <div class="form-group">
-                    <label for="reg_address" class="form-label">
-                        <i class="fas fa-map-marker-alt"></i> Address (Optional)
-                    </label>
-                    <textarea 
-                        id="reg_address" 
-                        name="address" 
-                        class="form-control" 
-                        placeholder="Enter your address"
-                        rows="3"
-                    ></textarea>
+                <!-- Row 4: Address (full width) -->
+                <div class="register-form-full-width">
+                    <div class="form-group">
+                        <label for="reg_address" class="form-label">
+                            <i class="fas fa-map-marker-alt"></i> Address (Optional)
+                        </label>
+                        <textarea 
+                            id="reg_address" 
+                            name="address" 
+                            class="form-control" 
+                            placeholder="Enter your address"
+                            rows="2"
+                        ></textarea>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-block">
@@ -275,11 +287,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
 
             <!-- Footer with demo credentials -->
             <div class="auth-footer">
-                <p>
-                    <strong>Demo Credentials:</strong><br>
-                    Admin: <code>admin@lms.com</code> / <code>password</code><br>
-                    Student: <code>student@lms.com</code> / <code>password</code>
-                </p>
+                <div id="demo-credentials">
+                    <div class="demo-title">
+                        <i class="fas fa-key"></i>
+                        <span>Quick Login</span>
+                    </div>
+                    <div class="demo-cards">
+                        <div class="demo-card" onclick="fillDemoCredentials('student')">
+                            <div class="demo-card-icon">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div class="demo-card-content">
+                                <h4>Student Access</h4>
+                                <p>student@lms.com</p>
+                            </div>
+                        </div>
+                        <div class="demo-card" onclick="fillDemoCredentials('admin')">
+                            <div class="demo-card-icon">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div class="demo-card-content">
+                                <h4>Admin Access</h4>
+                                <p>admin@lms.com</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <p>&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars(getSetting('library_name', 'Library Management System')); ?>. All rights reserved.</p>
             </div>
         </div>
@@ -295,11 +328,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
             // Add active class to clicked tab
             event.target.classList.add('active');
             
-            // Show corresponding form
+            // Get auth-card and demo credentials elements
+            const authCard = document.querySelector('.auth-card');
+            const demoCredentials = document.getElementById('demo-credentials');
+            
+            // Show corresponding form and manage demo credentials visibility
             if (tab === 'login') {
                 document.getElementById('login-form').classList.add('active');
+                demoCredentials.style.display = 'block';
+                authCard.classList.remove('register-active');
             } else if (tab === 'register') {
                 document.getElementById('register-form').classList.add('active');
+                demoCredentials.style.display = 'none';
+                authCard.classList.add('register-active');
             }
         }
 
@@ -352,6 +393,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
                 setTimeout(() => alert.remove(), 300);
             });
         }, 5000);
+
+        // Fill demo credentials function
+        function fillDemoCredentials(type) {
+            const emailInput = document.getElementById('login_email');
+            const passwordInput = document.getElementById('login_password');
+            const userTypeRadios = document.querySelectorAll('input[name="user_type"]');
+            
+            if (type === 'admin') {
+                emailInput.value = 'admin@lms.com';
+                passwordInput.value = 'password';
+                // Select admin radio button
+                userTypeRadios.forEach(radio => {
+                    if (radio.value === 'admin') {
+                        radio.checked = true;
+                    }
+                });
+            } else if (type === 'student') {
+                emailInput.value = 'student@lms.com';
+                passwordInput.value = 'password';
+                // Select user radio button
+                userTypeRadios.forEach(radio => {
+                    if (radio.value === 'user') {
+                        radio.checked = true;
+                    }
+                });
+            }
+            
+            // Add a subtle animation to show the fields were filled
+            emailInput.style.backgroundColor = 'var(--primary-light)';
+            passwordInput.style.backgroundColor = 'var(--primary-light)';
+            
+            setTimeout(() => {
+                emailInput.style.backgroundColor = '';
+                passwordInput.style.backgroundColor = '';
+            }, 1000);
+        }
     </script>
 </body>
 </html>

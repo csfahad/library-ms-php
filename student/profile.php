@@ -221,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     ><?php echo htmlspecialchars($currentUser['address'] ?? ''); ?></textarea>
                                 </div>
 
-                                <hr class="my-4 mb-4">
+                                <hr class="mt-4 mb-4" style="opacity: 0.3;">
 
                                 <!-- Password Change Section -->
                                 <h4 class="mb-3">
