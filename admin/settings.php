@@ -358,7 +358,8 @@ try {
                             </div>
                             <div class="stat-content">
                                 <h3 class="stat-number"><?php echo getTotalAvailableBooks(); ?></h3>
-                                <p class="stat-label">Available Books</p>
+                                <p class="stat-label">Available Book Titles</p>
+                                <small class="stat-sublabel text-muted"><?php echo getTotalAvailableBookCopies(); ?> total copies</small>
                             </div>
                         </div>
 
@@ -429,5 +430,22 @@ try {
     </div>
 
     <script src="../assets/js/admin-dashboard.js"></script>
+    
+    <style>
+        .stat-sublabel {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            opacity: 0.7;
+            font-weight: 400;
+        }
+        
+        .stat-content {
+            flex: 1;
+        }
+        
+        .stat-content .stat-label {
+            margin-bottom: 0.125rem;
+        }
+    </style>
 </body>
 </html>

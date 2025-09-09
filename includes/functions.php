@@ -858,11 +858,27 @@ function getBookCategories() {
 function getTotalAvailableBooks() {
     try {
         $db = getDB();
-        $stmt = $db->query("SELECT SUM(available_quantity) as total FROM books WHERE available_quantity > 0");
+        $stmt = $db->query("SELECT COUNT(*) as total FROM books WHERE available_quantity > 0");
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return (int)$result['total'];
     } catch (Exception $e) {
         error_log("Get total available books error: " . $e->getMessage());
+        return 0;
+    }
+}
+
+/**
+ * Get total available book copies count
+ * @return int
+ */
+function getTotalAvailableBookCopies() {
+    try {
+        $db = getDB();
+        $stmt = $db->query("SELECT SUM(available_quantity) as total FROM books WHERE available_quantity > 0");
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return (int)$result['total'];
+    } catch (Exception $e) {
+        error_log("Get total available book copies error: " . $e->getMessage());
         return 0;
     }
 }
