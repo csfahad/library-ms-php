@@ -158,7 +158,7 @@ $rejectedRequests = array_filter($bookRequests, function($req) { return $req['st
                                                     <i class="fas fa-calendar"></i> 
                                                     Requested <?php echo date('M j', strtotime($request['request_date'])); ?>
                                                 </small>
-                                                <button class="btn btn-outline-secondary btn-sm" onclick="cancelRequest(<?php echo $request['request_id']; ?>)">
+                                                <button class="btn btn-sm" style="background: var(--bg-tertiary); color: var(--primary-color); padding: 0.5rem 1rem; border: 1px solid var(--primary-color);" onclick="cancelRequest(<?php echo $request['request_id']; ?>)">
                                                     <i class="fas fa-times"></i> Cancel
                                                 </button>
                                             </div>
