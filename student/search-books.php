@@ -120,7 +120,7 @@ $categories = getBookCategories();
                     <?php endif; ?>
                 </p>
                 <?php if ($search || $category): ?>
-                    <a href="search-books.php" class="btn btn-secondary btn-sm">
+                    <a href="search-books.php" class="btn btn-secondary btn-sm" style="padding: 0.5rem 1rem; border: 0.5px solid var(--border-dark);">
                         <i class="fas fa-times"></i> Clear Filters
                     </a>
                 <?php endif; ?>
@@ -506,12 +506,13 @@ $categories = getBookCategories();
 }
 
 .btn-primary {
-    background: #007bff;
-    color: white;
+    background: var(--primary-color);
+    color: #fff;
 }
 
 .btn-primary:hover {
-    background: #0056b3;
+    background: var(--primary-hover);
+    color: #fff;
 }
 
 .btn-success {

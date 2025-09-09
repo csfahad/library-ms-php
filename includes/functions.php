@@ -644,8 +644,11 @@ function searchBooks($query = '', $category = '', $availability = '', $limit = 1
         $params = [];
         
         if (!empty($query)) {
-            $sql .= " AND (b.title LIKE :query OR b.author LIKE :query OR b.isbn LIKE :query OR b.description LIKE :query)";
-            $params['query'] = "%$query%";
+            $sql .= " AND (b.title LIKE :query1 OR b.author LIKE :query2 OR b.isbn LIKE :query3 OR b.description LIKE :query4)";
+            $params['query1'] = "%$query%";
+            $params['query2'] = "%$query%";
+            $params['query3'] = "%$query%";
+            $params['query4'] = "%$query%";
         }
         
         if (!empty($category)) {
@@ -706,8 +709,11 @@ function getSearchBooksCount($query = '', $category = '', $availability = '') {
         $params = [];
         
         if (!empty($query)) {
-            $sql .= " AND (b.title LIKE :query OR b.author LIKE :query OR b.isbn LIKE :query OR b.description LIKE :query)";
-            $params['query'] = "%$query%";
+            $sql .= " AND (b.title LIKE :query1 OR b.author LIKE :query2 OR b.isbn LIKE :query3 OR b.description LIKE :query4)";
+            $params['query1'] = "%$query%";
+            $params['query2'] = "%$query%";
+            $params['query3'] = "%$query%";
+            $params['query4'] = "%$query%";
         }
         
         if (!empty($category)) {

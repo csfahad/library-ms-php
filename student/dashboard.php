@@ -203,7 +203,7 @@ foreach ($issuedBooks as $book) {
                             </h3>
                         </div>
                         <div class="card-body">
-                            <form action="search-books.php" method="GET" class="row g-3">
+                            <form action="search-books.php" method="GET" class="search-form">
                                 <div class="col-md-8">
                                     <input 
                                         type="text" 
@@ -213,7 +213,7 @@ foreach ($issuedBooks as $book) {
                                     >
                                 </div>
                                 <div class="col-md-4">
-                                    <button type="submit" class="btn btn-primary w-100">
+                                    <button type="submit" class="btn btn-primary">
                                         <i class="fas fa-search"></i> Search
                                     </button>
                                 </div>
