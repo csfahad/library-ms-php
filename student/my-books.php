@@ -49,6 +49,7 @@ $rejectedRequests = array_filter($bookRequests, function($req) { return $req['st
                     <li><a href="my-books.php" class="nav-link active"><i class="fas fa-book"></i> My Books</a></li>
                     <li><a href="history.php" class="nav-link"><i class="fas fa-history"></i> History</a></li>
                     <li><a href="profile.php" class="nav-link"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="feedback.php" class="nav-link"><i class="fas fa-comment"></i> Feedback</a></li>
                     <li><a href="../includes/logout.php" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                 </ul>
             </div>
@@ -135,7 +136,7 @@ $rejectedRequests = array_filter($bookRequests, function($req) { return $req['st
                     <?php else: ?>
                         <div class="row">
                             <?php foreach ($pendingRequests as $request): ?>
-                                <div class="col-lg-6 col-12 mb-3">
+                                <div class="col-lg-6 col-12">
                                     <div class="card book-request-card">
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-start mb-3">
@@ -186,10 +187,10 @@ $rejectedRequests = array_filter($bookRequests, function($req) { return $req['st
                     <?php else: ?>
                         <div class="row">
                             <?php foreach ($issuedRequests as $request): ?>
-                                <div class="col-lg-6 col-12 mb-3">
+                                <div class="col-lg-6 col-12">
                                     <div class="card book-request-card">
                                         <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <div class="d-flex justify-content-between align-items-start">
                                                 <?php 
                                                 $isOverdue = $request['due_date'] && strtotime($request['due_date']) < time();
                                                 ?>
@@ -209,7 +210,7 @@ $rejectedRequests = array_filter($bookRequests, function($req) { return $req['st
                                                 <i class="fas fa-tag"></i> <?php echo htmlspecialchars($request['category']); ?>
                                             </p>
                                             
-                                            <div class="due-date-info mb-3">
+                                            <div class="due-date-info">
                                                 <div class="d-flex justify-content-between">
                                                     <span class="text-secondary">Due Date:</span>
                                                     <span class="<?php echo $isOverdue ? 'text-danger font-weight-bold' : 'text-primary'; ?>">
@@ -254,10 +255,10 @@ $rejectedRequests = array_filter($bookRequests, function($req) { return $req['st
                     <?php else: ?>
                         <div class="row">
                             <?php foreach ($rejectedRequests as $request): ?>
-                                <div class="col-lg-6 col-12 mb-3">
+                                <div class="col-lg-6 col-12">
                                     <div class="card book-request-card">
                                         <div class="card-body">
-                                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                            <div class="d-flex justify-content-between align-items-start">
                                                 <?php if ($request['status'] === 'cancelled'): ?>
                                                     <span class="badge badge-secondary">Cancelled</span>
                                                 <?php else: ?>
@@ -731,10 +732,10 @@ $rejectedRequests = array_filter($bookRequests, function($req) { return $req['st
         }
 
         .book-request-card {
-            height: 100%;
             border: 1px solid #e9ecef;
             border-radius: 8px;
             transition: all 0.3s ease;
+            margin-bottom: 10px;
         }
 
         .book-request-card:hover {

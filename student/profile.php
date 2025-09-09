@@ -117,6 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <li><a href="my-books.php" class="nav-link"><i class="fas fa-book"></i> My Books</a></li>
                     <li><a href="history.php" class="nav-link"><i class="fas fa-history"></i> History</a></li>
                     <li><a href="profile.php" class="nav-link active"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="feedback.php" class="nav-link"><i class="fas fa-comment"></i> Feedback</a></li>
                     <li><a href="../includes/logout.php" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                 </ul>
             </div>

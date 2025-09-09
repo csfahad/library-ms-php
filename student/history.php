@@ -44,6 +44,7 @@ $history = getUserBorrowingHistory($currentUser['user_id'], 100); // Get up to 1
                     <li><a href="my-books.php" class="nav-link"><i class="fas fa-book"></i> My Books</a></li>
                     <li><a href="history.php" class="nav-link active"><i class="fas fa-history"></i> History</a></li>
                     <li><a href="profile.php" class="nav-link"><i class="fas fa-user"></i> Profile</a></li>
+                    <li><a href="feedback.php" class="nav-link"><i class="fas fa-comment"></i> Feedback</a></li>
                     <li><a href="../includes/logout.php" class="nav-link"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
                 </ul>
             </div>
@@ -129,7 +130,7 @@ $history = getUserBorrowingHistory($currentUser['user_id'], 100); // Get up to 1
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h3 class="card-title mb-0">Complete Borrowing History</h3>
                         <div class="card-actions">
-                            <button class="btn btn-outline-primary btn-sm" onclick="exportHistory()">
+                            <button class="btn btn-sm" style="background: var(--bg-primary); color: var(--primary-color); border: 0.5px solid var(--primary-color);" onclick="exportHistory()">
                                 <i class="fas fa-download"></i> Export
                             </button>
                         </div>
