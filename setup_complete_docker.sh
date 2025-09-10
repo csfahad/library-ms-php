@@ -156,6 +156,61 @@ for i in {1..30}; do
 done
 
 # Test database connection
+# Run PHP migration runner to apply all migrations
+echo ""
+echo -e "${BLUE}🗄️ Running database migrations...${NC}"
+
+
+# Wait for MySQL root access to be ready
+echo -e "${BLUE}⏳ Waiting for MySQL root access...${NC}"
+for i in {1..30}; do
+    docker exec lms_mysql mysqladmin ping -u root -proot_password_123 > /dev/null 2>&1 && \
+    docker exec lms_mysql mysql -u root -proot_password_123 -e "SELECT 1;" > /dev/null 2>&1 && break
+    echo -n "."
+    sleep 2
+    if [ $i -eq 30 ]; then
+        echo -e "\n${RED}❌ MySQL root access not available after waiting. Check container logs.${NC}"
+        exit 1
+    fi
+done
+echo -e "\n${GREEN}✅ MySQL root access is ready${NC}"
+
+# Drop and recreate the database for a clean setup
+echo -e "${BLUE}🗑️ Dropping and recreating database...${NC}"
+docker exec lms_mysql mysql -u root -proot_password_123 -e "DROP DATABASE IF EXISTS library_management_system; CREATE DATABASE library_management_system;"
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✅ Database dropped and recreated${NC}"
+else
+    echo -e "${RED}❌ Failed to drop/recreate database. Check logs above.${NC}"
+    exit 1
+fi
+
+# Set log_bin_trust_function_creators=1 to allow triggers without SUPER privilege
+echo -e "${BLUE}🔑 Setting log_bin_trust_function_creators=1...${NC}"
+docker exec lms_mysql mysql -u root -proot_password_123 -e "SET GLOBAL log_bin_trust_function_creators = 1;"
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✅ log_bin_trust_function_creators set${NC}"
+else
+    echo -e "${RED}❌ Failed to set log_bin_trust_function_creators. Check logs above.${NC}"
+    exit 1
+fi
+
+echo -e "${BLUE}💾 Importing base schema...${NC}"
+docker exec -i lms_mysql mysql -u lms_user -plms_password_123 library_management_system < database/library_management_system.sql
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✅ Base schema imported successfully${NC}"
+else
+    echo -e "${RED}❌ Failed to import base schema. Check logs above.${NC}"
+    exit 1
+fi
+
+docker exec lms_web php /var/www/html/database/migrate.php run
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✅ All migrations applied successfully${NC}"
+else
+    echo -e "${RED}❌ Migration runner failed. Check logs above.${NC}"
+    exit 1
+fi
 echo ""
 echo -e "${BLUE}🔍 Testing application...${NC}"
 

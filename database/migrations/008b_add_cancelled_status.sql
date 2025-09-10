@@ -1,5 +1,5 @@
 -- Add 'cancelled' status to book_requests table
--- Migration: 008_add_cancelled_status.sql
+-- Migration: 008b_add_cancelled_status.sql
 
 USE library_management_system;
 

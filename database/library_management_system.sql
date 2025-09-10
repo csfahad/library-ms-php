@@ -15,7 +15,7 @@ CREATE TABLE users (
     role VARCHAR(50) NOT NULL DEFAULT 'student',
     phone VARCHAR(20),
     address TEXT,
-    registration_date DATE DEFAULT (CURRENT_DATE),
+    registration_date DATE,
     status VARCHAR(20) DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -44,7 +44,7 @@ CREATE TABLE books (
     available_quantity INT NOT NULL DEFAULT 1,
     price DECIMAL(10,2),
     description TEXT,
-    added_date DATE DEFAULT CURRENT_DATE,
+    added_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -54,7 +54,7 @@ CREATE TABLE issued_books (
     issue_id INT PRIMARY KEY AUTO_INCREMENT,
     user_id INT NOT NULL,
     book_id INT NOT NULL,
-    issue_date DATE NOT NULL DEFAULT CURRENT_DATE,
+    issue_date DATE NOT NULL,
     due_date DATE NOT NULL,
     return_date DATE NULL,
     fine DECIMAL(10,2) DEFAULT 0.00,
@@ -73,22 +73,10 @@ CREATE TABLE categories (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Feedback Table
-CREATE TABLE feedback (
-    feedback_id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    message TEXT NOT NULL,
-    feedback_date DATE DEFAULT CURRENT_DATE,
-    status VARCHAR(20) DEFAULT 'pending',
-    admin_response TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-);
-
 -- System Settings Table
 CREATE TABLE system_settings (
     setting_id INT PRIMARY KEY AUTO_INCREMENT,
-    setting_name VARCHAR(100) UNIQUE NOT NULL,
+    setting_key VARCHAR(100) UNIQUE NOT NULL,
     setting_value TEXT NOT NULL,
     description TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -136,7 +124,7 @@ INSERT INTO categories (category_name, description) VALUES
 ('Reference', 'Reference and dictionary books');
 
 -- Insert Default System Settings
-INSERT INTO system_settings (setting_name, setting_value, description) VALUES
+INSERT INTO system_settings (setting_key, setting_value, description) VALUES
 ('library_name', 'City Library Management System', 'Name of the library'),
 ('max_books_per_user', '3', 'Maximum books a user can issue'),
 ('default_issue_days', '14', 'Default number of days for book issue'),
@@ -225,26 +213,3 @@ END //
 
 DELIMITER ;
 
--- System Settings Table
-CREATE TABLE system_settings (
-    setting_id INT PRIMARY KEY AUTO_INCREMENT,
-    setting_key VARCHAR(100) UNIQUE NOT NULL,
-    setting_value TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
-
--- Insert default system settings
-INSERT INTO system_settings (setting_key, setting_value) VALUES
-('library_name', 'City Public Library'),
-('library_address', '123 Main Street, City, State 12345'),
-('library_phone', '+1-234-567-8900'),
-('library_email', 'info@library.com'),
-('max_books_per_user', '3'),
-('issue_duration_days', '14'),
-('fine_per_day', '2.00');
-
--- Add constraints to ensure data integrity
-ALTER TABLE books ADD CONSTRAINT chk_quantity CHECK (quantity >= 0);
-ALTER TABLE books ADD CONSTRAINT chk_available_quantity CHECK (available_quantity >= 0);
-ALTER TABLE books ADD CONSTRAINT chk_available_le_total CHECK (available_quantity <= quantity);

@@ -77,7 +77,6 @@ WHERE br.status = 'issued'
 ORDER BY br.due_date ASC;
 
 -- Triggers for automatic book availability management
-DELIMITER //
 
 -- Trigger to decrease available quantity when request is approved and issued
 CREATE TRIGGER update_book_quantity_on_approval 
@@ -125,7 +124,7 @@ BEGIN
         SET status = 'returned', return_date = NOW()
         WHERE user_id = NEW.user_id AND book_id = NEW.book_id AND status = 'issued';
     END IF;
-END //
+END;
 
 -- Trigger to prevent multiple pending requests for same book by same user
 CREATE TRIGGER prevent_duplicate_requests
@@ -153,6 +152,4 @@ BEGIN
     IF existing_count > 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'User already has pending request or active issue for this book';
     END IF;
-END //
-
-DELIMITER ;
+END;

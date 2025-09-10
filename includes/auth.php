@@ -38,7 +38,7 @@ function loginUser($email, $password, $userType = 'user') {
         
         if ($userType === 'admin') {
             $sql = "SELECT admin_id as id, username, password, full_name as name, contact_email as email, 'admin' as role 
-                    FROM admin WHERE username = :email";
+                    FROM admin WHERE contact_email = :email";
         } else {
             $sql = "SELECT user_id as id, name, email, password, role, status 
                     FROM users WHERE email = :email AND status = 'active'";
@@ -89,21 +89,21 @@ function registerUser($userData) {
             return false; // Email already exists
         }
         
-        // Insert new user
-        $sql = "INSERT INTO users (name, email, password, role, phone, address) 
-                VALUES (:name, :email, :password, :role, :phone, :address)";
-        
-        $stmt = $db->prepare($sql);
-        $hashedPassword = hashPassword($userData['password']);
-        
-        $stmt->bindParam(':name', $userData['name']);
-        $stmt->bindParam(':email', $userData['email']);
-        $stmt->bindParam(':password', $hashedPassword);
-        $stmt->bindParam(':role', $userData['role']);
-        $stmt->bindParam(':phone', $userData['phone']);
-        $stmt->bindParam(':address', $userData['address']);
-        
-        return $stmt->execute();
+    // Insert new user with registration_date set to current date
+    $sql = "INSERT INTO users (name, email, password, role, phone, address, registration_date) 
+        VALUES (:name, :email, :password, :role, :phone, :address, CURDATE())";
+
+    $stmt = $db->prepare($sql);
+    $hashedPassword = hashPassword($userData['password']);
+
+    $stmt->bindParam(':name', $userData['name']);
+    $stmt->bindParam(':email', $userData['email']);
+    $stmt->bindParam(':password', $hashedPassword);
+    $stmt->bindParam(':role', $userData['role']);
+    $stmt->bindParam(':phone', $userData['phone']);
+    $stmt->bindParam(':address', $userData['address']);
+
+    return $stmt->execute();
         
     } catch (Exception $e) {
         error_log("Registration error: " . $e->getMessage());
