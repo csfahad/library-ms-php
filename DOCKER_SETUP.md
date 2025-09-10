@@ -1,19 +1,19 @@
-# 🐳 Complete Docker Setup Guide for LMS
+# Complete Docker Setup guide for Library Management System
 
-## ✅ **ZERO Local Installation Required!**
+## **No LOCAL Installation Required!**
 
 **Everything runs in Docker containers:**
 
--   🌐 **PHP 8.1 + Apache** Web Server
--   🗄️ **MySQL 8.0** Database
--   🔧 **phpMyAdmin** Database Management
--   🚀 **Redis** Session Storage & Caching
+-   **PHP 8.1 + Apache** Web Server
+-   **MySQL 8.0** Database
+-   **phpMyAdmin** Database Management
+-   **Redis** Session Storage & Caching
 
 **You only need:** Docker Desktop (that's it!)
 
 ---
 
-## � **One-Command Setup:**
+## **One-Command Setup:**
 
 ```bash
 # Navigate to LMS directory
@@ -35,11 +35,11 @@ cd /path/to/lms
 
 ---
 
-## 🏗️ **Container Architecture:**
+## **Container Architecture:**
 
 ```
 ┌─────────────────────────────────────────────┐
-│  🌐 Web Server (lms_web)                   │
+│  Web Server (lms_web)                   │
 │  • PHP 8.1 + Apache                        │
 │  • Port: 8000 → http://localhost:8000      │
 │  • All PHP extensions included             │
@@ -48,7 +48,7 @@ cd /path/to/lms
 └─────────────────┬───────────────────────────┘
                   │ Docker Network
 ┌─────────────────┴───────────────────────────┐
-│  🗄️ MySQL Database (lms_mysql)             │
+│  MySQL Database (lms_mysql)             │
 │  • MySQL 8.0 with your LMS data           │
 │  • Internal network communication          │
 │  • Persistent data storage                 │
@@ -56,14 +56,14 @@ cd /path/to/lms
 └─────────────────┬───────────────────────────┘
                   │ Docker Network
 ┌─────────────────┴───────────────────────────┐
-│  🔧 phpMyAdmin (lms_phpmyadmin)            │
+│  phpMyAdmin (lms_phpmyadmin)            │
 │  • Port: 8080 → http://localhost:8080     │
 │  • Web-based database management           │
 │  • Direct connection to MySQL              │
 └─────────────────┬───────────────────────────┘
                   │ Docker Network
 ┌─────────────────┴───────────────────────────┐
-│  🚀 Redis (lms_redis)                      │
+│  Redis (lms_redis)                      │
 │  • Session storage for better performance  │
 │  • Caching layer for database queries      │
 │  • Persistent data across restarts         │
@@ -72,7 +72,7 @@ cd /path/to/lms
 
 ---
 
-## � **Prerequisites:**
+## **Prerequisites:**
 
 ### **Only Docker Desktop Required:**
 
@@ -102,9 +102,9 @@ docker info               # Should connect without errors
 
 ---
 
-## 🎯 **Access Points After Setup:**
+## **Access Points After Setup:**
 
-### **🌐 Main Application:**
+### **Main Application:**
 
 ```
 http://localhost:8000
@@ -114,7 +114,7 @@ http://localhost:8000
 -   Fully functional with all features
 -   Responsive design for all devices
 
-### **🔧 Database Management (phpMyAdmin):**
+### **Database Management (phpMyAdmin):**
 
 ```
 http://localhost:8080
@@ -125,21 +125,21 @@ http://localhost:8080
 -   Visual database management interface
 -   Query execution and data export
 
-### **👤 Login Credentials:**
+### **Login Credentials:**
 
 ```
-🔐 Admin Portal:
+Admin Portal:
    Username: admin
    Password: password
 
-👨‍🎓 Student Portal:
+Student Portal:
    Email: john@example.com
    Password: password
 ```
 
 ---
 
-## 🛠️ **Container Management:**
+## **Container Management:**
 
 ### **Daily Operations:**
 
@@ -194,7 +194,7 @@ docker-compose up -d
 
 ---
 
-## 🔧 **Customization:**
+## **Customization:**
 
 ### **Environment Variables (.env):**
 
@@ -235,7 +235,7 @@ Edit `docker/apache/vhost.conf` for:
 
 ---
 
-## 🚀 **Production Deployment:**
+## **Production Deployment:**
 
 ### **Security Hardening:**
 
@@ -282,7 +282,7 @@ aws s3 cp ./backups/ s3://your-bucket/lms-backups/ --recursive
 
 ---
 
-## � **Troubleshooting:**
+## **Troubleshooting:**
 
 ### **Container Issues:**
 
@@ -328,7 +328,7 @@ docker-compose restart web
 
 ---
 
-## 📊 **Performance Optimization:**
+## **Performance Optimization:**
 
 ### **Resource Limits:**
 
@@ -368,7 +368,7 @@ The setup includes Redis for:
 
 ---
 
-## 🎉 **Benefits of This Docker Setup:**
+## **Benefits of This Docker Setup:**
 
 ### **✅ Zero Local Dependencies:**
 
@@ -400,7 +400,7 @@ The setup includes Redis for:
 
 ---
 
-## 🚀 **Get Started Now:**
+## **Get Started Now:**
 
 ```bash
 # 1. Clone or navigate to LMS directory
@@ -413,8 +413,8 @@ cd /path/to/lms
 open http://localhost:8000
 
 # 4. Login and enjoy!
-# Admin: admin / password
+# Admin: admin@library.com / password
 # Student: john@example.com / password
 ```
 
-**That's it! Your complete LMS is running with zero local installations required!** 🎉
+**That's it! The complete Library Managemet System is running with zero local installations required!**
