@@ -39,34 +39,34 @@ cd /path/to/lms
 
 ```
 ┌─────────────────────────────────────────────┐
-│  Web Server (lms_web)                   │
-│  • PHP 8.1 + Apache                        │
-│  • Port: 8000 → http://localhost:8000      │
-│  • All PHP extensions included             │
-│  • Automatic SSL headers                   │
-│  • Gzip compression enabled                │
+│  Web Server (lms_web)                       │
+│  • PHP 8.1 + Apache                         │
+│  • Port: 8000 → http://localhost:8000       │
+│  • All PHP extensions included              │
+│  • Automatic SSL headers                    │
+│  • Gzip compression enabled                 │
 └─────────────────┬───────────────────────────┘
                   │ Docker Network
 ┌─────────────────┴───────────────────────────┐
-│  MySQL Database (lms_mysql)             │
-│  • MySQL 8.0 with your LMS data           │
-│  • Internal network communication          │
-│  • Persistent data storage                 │
-│  • Health checks enabled                   │
+│  MySQL Database (lms_mysql)                 │
+│  • MySQL 8.0 with your LMS data             │
+│  • Internal network communication           │
+│  • Persistent data storage                  │
+│  • Health checks enabled                    │
 └─────────────────┬───────────────────────────┘
                   │ Docker Network
 ┌─────────────────┴───────────────────────────┐
-│  phpMyAdmin (lms_phpmyadmin)            │
-│  • Port: 8080 → http://localhost:8080     │
-│  • Web-based database management           │
-│  • Direct connection to MySQL              │
+│  phpMyAdmin (lms_phpmyadmin)                │
+│  • Port: 8080 → http://localhost:8080       │
+│  • Web-based database management            │
+│  • Direct connection to MySQL               │
 └─────────────────┬───────────────────────────┘
                   │ Docker Network
 ┌─────────────────┴───────────────────────────┐
-│  Redis (lms_redis)                      │
-│  • Session storage for better performance  │
-│  • Caching layer for database queries      │
-│  • Persistent data across restarts         │
+│  Redis (lms_redis)                          │
+│  • Session storage for better performance   │
+│  • Caching layer for database queries       │
+│  • Persistent data across restarts          │
 └─────────────────────────────────────────────┘
 ```
 
