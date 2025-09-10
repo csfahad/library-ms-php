@@ -1,7 +1,6 @@
-/* Modern Library Management System - Clean Light Theme */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
 
-/* CSS Variables - Light Theme Only */
+/* CSS Variables */
 :root {
     --primary-color: #f07238;
     --primary-hover: #e85d1f;
@@ -160,7 +159,6 @@ a:hover {
     );
 }
 
-/* Ensure proper centering for both forms */
 .auth-card {
     width: 100%;
     max-width: 520px;
@@ -436,7 +434,7 @@ textarea.form-control {
     transform: none !important;
 }
 
-/* User Type Selection - Compact Design */
+/* User Type Selection */
 .user-type-group {
     display: flex;
     gap: 0.5rem;
@@ -564,7 +562,7 @@ textarea.form-control {
     flex-direction: column;
 }
 
-/* Header/Navbar */
+/* Navbar */
 .navbar {
     background: var(--bg-primary);
     border-bottom: 1px solid var(--border-color);
@@ -1114,7 +1112,7 @@ textarea.form-control {
     margin-top: 0;
 }
 
-/* Search Form Alignment Fix */
+/* Search Form */
 .search-form {
     display: flex !important;
     flex-wrap: nowrap !important;
@@ -2310,7 +2308,7 @@ textarea.form-control {
     margin: 0;
 }
 
-/* Stats Cards Grid - Alternate Layout (removed duplicate) */
+/* Stats Cards Grid - Alternate Layout */
 
 /* Quick Actions */
 .quick-actions-card {
@@ -2800,9 +2798,7 @@ textarea.form-control {
     gap: 0.5rem;
 }
 
-/* ====================
-   BOOKS PAGE STYLES
-==================== */
+/* BOOKS PAGE STYLES */
 
 /* Books Header */
 .books-header {

@@ -1,13 +1,9 @@
-/**
- * Admin Dashboard JavaScript
- * Library Management System
- */
+/* Admin Dashboard JavaScript */
 
 // Initialize dashboard
 document.addEventListener("DOMContentLoaded", function () {
     console.log("Admin Dashboard initialized");
 
-    // Auto-hide alerts after 5 seconds
     const alerts = document.querySelectorAll(".alert");
     alerts.forEach((alert) => {
         setTimeout(() => {
@@ -30,10 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Initialize tooltips if any
     initializeTooltips();
-
-    // Initialize form validation
     initializeFormValidation();
 });
 

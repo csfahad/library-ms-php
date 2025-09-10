@@ -1,6 +1,4 @@
-/**
- * Library Management System - JavaScript Utilities
- */
+/* LMS - JavaScript Utilities */
 
 window.LMS = (function () {
     "use strict";

@@ -1,40 +1,29 @@
-/**
- * Library Management System - Main JavaScript
+/*
+ * Main JavaScript
  * Handles client-side functionality and interactions
  */
 
 // DOM Content Loaded Event
 document.addEventListener("DOMContentLoaded", function () {
-    // Initialize all components
     initializeComponents();
 });
 
-/**
- * Initialize all JavaScript components
- */
+/* Initialize all JavaScript components */
 function initializeComponents() {
-    // Initialize form validations
     initializeFormValidation();
 
-    // Initialize modals
     initializeModals();
 
-    // Initialize search functionality
     initializeSearch();
 
-    // Initialize data tables
     initializeDataTables();
 
-    // Initialize tooltips and other UI components
     initializeUIComponents();
 
-    // Initialize sidebar toggle for mobile
     initializeSidebarToggle();
 }
 
-/**
- * Form Validation
- */
+/* Form Validation */
 function initializeFormValidation() {
     const forms = document.querySelectorAll('form[data-validate="true"]');
 
@@ -90,16 +79,13 @@ function validateField(field) {
     const type = field.type;
     const required = field.hasAttribute("required");
 
-    // Clear previous errors
     clearFieldError(field);
 
-    // Required field validation
     if (required && !value) {
         showFieldError(field, "This field is required");
         return false;
     }
 
-    // Skip further validation if field is empty and not required
     if (!value && !required) {
         return true;
     }
@@ -204,9 +190,7 @@ function clearFieldError(field) {
     }
 }
 
-/**
- * Modal functionality
- */
+/* Modal functionality */
 function initializeModals() {
     // Open modal buttons
     document.querySelectorAll("[data-modal-target]").forEach((button) => {
@@ -350,9 +334,7 @@ function searchUsers(searchTerm) {
     });
 }
 
-/**
- * Data tables functionality
- */
+/* Data tables functionality */
 function initializeDataTables() {
     // Add sorting functionality
     document.querySelectorAll("th[data-sort]").forEach((header) => {
@@ -417,13 +399,10 @@ function sortTable(table, column, order) {
  * UI Components
  */
 function initializeUIComponents() {
-    // Initialize tooltips (if needed)
     initializeTooltips();
 
-    // Initialize alerts auto-hide
     initializeAlerts();
 
-    // Initialize loading states
     initializeLoadingStates();
 }
 
@@ -476,9 +455,7 @@ function initializeLoadingStates() {
     });
 }
 
-/**
- * Sidebar toggle for mobile
- */
+/* Sidebar toggle for mobile */
 function initializeSidebarToggle() {
     const sidebarToggle = document.getElementById("sidebarToggle");
     const sidebar = document.querySelector(".sidebar");
@@ -502,9 +479,7 @@ function initializeSidebarToggle() {
     }
 }
 
-/**
- * Utility Functions
- */
+/* Utility Functions */
 
 /**
  * Validate email format
@@ -630,9 +605,7 @@ function showTooltip(element) {
     tooltip.id = "current-tooltip";
 }
 
-/**
- * Hide tooltip
- */
+/* Hide tooltip */
 function hideTooltip() {
     const tooltip = document.getElementById("current-tooltip");
     if (tooltip) {
