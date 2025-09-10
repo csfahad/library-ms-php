@@ -1,25 +1,18 @@
 <?php
-/**
- * Student Dashboard
- * Library Management System
- */
+/* Student Dashboard */
 
 require_once '../config/database.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
-// Require login
 requireLogin();
 
-// Get current user
 $currentUser = getCurrentUser();
 $userId = $currentUser['id'];
 
-// Get user's issued books
 $issuedBooks = getUserIssuedBooks($userId, 'issued');
 $returnedBooks = getUserIssuedBooks($userId, 'returned');
 
-// Get user statistics
 $stats = [
     'books_issued' => count($issuedBooks),
     'books_returned' => count($returnedBooks),
@@ -44,7 +37,7 @@ foreach ($issuedBooks as $book) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/fixed-modern.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>

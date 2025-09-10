@@ -1,17 +1,12 @@
 <?php
-/**
- * Student Search Books Page
- * Library Management System
- */
+/* Student Search Books Page */
 
 require_once '../config/database.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
-// Require login
 requireLogin();
 
-// Get current user
 $currentUser = getCurrentUser();
 
 // Search functionality
@@ -36,7 +31,7 @@ $categories = getBookCategories();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Books - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/fixed-modern.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -297,17 +292,14 @@ $categories = getBookCategories();
             }
         });
 
-        // Notification function to replace alert()
         function showNotification(title, message, type = 'info') {
             const modal = document.getElementById('notificationModal');
             const header = document.getElementById('notificationHeader');
             const titleEl = document.getElementById('notificationTitle');
             const messageEl = document.getElementById('notificationMessage');
             
-            // Set title
             titleEl.textContent = title;
             
-            // Set message with icon
             const icons = {
                 success: 'fas fa-check-circle',
                 error: 'fas fa-exclamation-circle',
@@ -320,14 +312,11 @@ $categories = getBookCategories();
                 <div>${message}</div>
             `;
             
-            // Set header style
             header.className = `modal-header ${type}`;
             
-            // Show modal
             openModal('notificationModal');
         }
 
-        // Confirmation function to replace confirm()
         function showConfirmation(title, message, onConfirm) {
             const titleEl = document.querySelector('#confirmationModal h4');
             const messageEl = document.getElementById('confirmationMessage');

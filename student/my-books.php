@@ -1,17 +1,12 @@
 <?php
-/**
- * Student My Books Page
- * Library Management System
- */
+/* Student My Books Page */
 
 require_once '../config/database.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
-// Require login
 requireLogin();
 
-// Get current user
 $currentUser = getCurrentUser();
 
 // Get user's book requests (pending, approved, etc.)
@@ -29,7 +24,7 @@ $rejectedRequests = array_filter($bookRequests, function($req) { return $req['st
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Books - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/fixed-modern.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -352,17 +347,14 @@ $rejectedRequests = array_filter($bookRequests, function($req) { return $req['st
             }
         });
 
-        // Notification function to replace alert()
         function showNotification(title, message, type = 'info') {
             const modal = document.getElementById('notificationModal');
             const header = document.getElementById('notificationHeader');
             const titleEl = document.getElementById('notificationTitle');
             const messageEl = document.getElementById('notificationMessage');
             
-            // Set title
             titleEl.textContent = title;
             
-            // Set message with icon
             const icons = {
                 success: 'fas fa-check-circle',
                 error: 'fas fa-exclamation-circle',
@@ -375,14 +367,11 @@ $rejectedRequests = array_filter($bookRequests, function($req) { return $req['st
                 <div>${message}</div>
             `;
             
-            // Set header style
             header.className = `modal-header ${type}`;
             
-            // Show modal
             openModal('notificationModal');
         }
 
-        // Confirmation function to replace confirm()
         function showConfirmation(title, message, onConfirm, buttonText = 'Confirm', buttonType = 'danger') {
             const titleEl = document.querySelector('#confirmationModal h4');
             const messageEl = document.getElementById('confirmationMessage');
@@ -394,11 +383,9 @@ $rejectedRequests = array_filter($bookRequests, function($req) { return $req['st
                 <div>${message}</div>
             `;
             
-            // Update confirm button
             confirmBtn.textContent = buttonText;
             confirmBtn.className = `btn-modal btn-${buttonType}`;
             
-            // Store the confirm callback
             window.confirmCallback = onConfirm;
             
             openModal('confirmationModal');

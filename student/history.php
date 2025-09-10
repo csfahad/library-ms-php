@@ -1,17 +1,12 @@
 <?php
-/**
- * Student History Page
- * Library Management System
- */
+/* Student History Page */
 
 require_once '../config/database.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
-// Require login
 requireLogin();
 
-// Get current user
 $currentUser = getCurrentUser();
 
 // Get user's borrowing history
@@ -24,7 +19,7 @@ $history = getUserBorrowingHistory($currentUser['user_id'], 100); // Get up to 1
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Borrowing History - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/fixed-modern.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
