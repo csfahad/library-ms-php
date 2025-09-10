@@ -180,7 +180,7 @@ function checkSessionTimeout() {
  * Require login (redirect if not logged in)
  * @param string $redirectTo
  */
-function requireLogin($redirectTo = 'index.php') {
+function requireLogin($redirectTo = 'auth.php') {
     if (!isLoggedIn() || checkSessionTimeout()) {
         header("Location: $redirectTo");
         exit();
@@ -191,7 +191,7 @@ function requireLogin($redirectTo = 'index.php') {
  * Require admin access
  * @param string $redirectTo
  */
-function requireAdmin($redirectTo = '../index.php') {
+function requireAdmin($redirectTo = '../auth.php') {
     requireLogin($redirectTo);
     if (!isAdmin()) {
         header("Location: $redirectTo");
@@ -203,7 +203,7 @@ function requireAdmin($redirectTo = '../index.php') {
  * Require librarian or admin access
  * @param string $redirectTo
  */
-function requireLibrarianOrAdmin($redirectTo = '../index.php') {
+function requireLibrarianOrAdmin($redirectTo = '../auth.php') {
     requireLogin($redirectTo);
     if (!isLibrarian() && !isAdmin()) {
         header("Location: $redirectTo");

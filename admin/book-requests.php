@@ -11,7 +11,7 @@ require_once '../includes/functions.php';
 // Require admin login
 requireLogin();
 if (!isAdmin()) {
-    header('Location: ../index.php');
+    header('Location: ../auth.php');
     exit;
 }
 

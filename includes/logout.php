@@ -11,6 +11,6 @@ require_once 'auth.php';
 logout();
 
 // Redirect to login page with success message
-header('Location: ../index.php?message=logout_success');
+header('Location: ../auth.php?message=logout_success');
 exit();
 ?>
