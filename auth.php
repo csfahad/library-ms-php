@@ -127,6 +127,47 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
             position: relative;
             z-index: 1;
         }
+
+        /* Footer Styles */
+        .footer {
+            background: var(--text-primary);
+            color: white;
+            padding: 3rem 2rem 1rem;
+            text-align: center;
+        }
+
+        .footer-container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .footer-brand .brand-icon {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem;
+            border-radius: var(--border-radius-lg);
+        }
+
+        .footer p {
+            opacity: 0.8;
+            margin-bottom: 1rem;
+            color: #cbd5e1;
+        }
+
+        .footer-divider {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 2rem 0 1rem;
+        }
     </style>
 </head>
 <body>
@@ -466,5 +507,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
             }, 1000);
         }
     </script>
+
+    <!-- Footer -->
+    <footer class="footer" id="about">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <span class="brand-icon">
+                    <i class="fas fa-book-open"></i>
+                </span>
+                <?php echo htmlspecialchars(getSetting('library_name', 'Library Management System')); ?>
+            </div>
+            <p><?php echo htmlspecialchars(getSetting('library_description', 'Modern, Secure & Efficient Library Solution')); ?></p>
+            <p>Empowering libraries with modern technology solutions</p>
+            
+            <div class="footer-divider"></div>
+            <p>&copy; <?php echo date('Y'); ?> <?php echo htmlspecialchars(getSetting('library_name', 'Library Management System')); ?>. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>

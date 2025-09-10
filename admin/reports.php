@@ -295,7 +295,7 @@ switch ($report_type) {
                                 <input type="date" name="date_to" class="form-control" value="<?= htmlspecialchars($date_to) ?>">
                             </div>
                             <div class="form-group" style="flex: 0 0 auto; margin: auto;">
-                                <button type="submit" class="btn btn-primary" style="padding: 18px 20px;">
+                                <button type="submit" class="btn btn-primary" style="padding: 18px 20px; margin-top: 1.1rem;">
                                     <i class="fas fa-filter"></i> Filter
                                 </button>
                             </div>
