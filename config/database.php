@@ -1,10 +1,7 @@
 <?php
-/**
- * Database Configuration File
- * Library Management System
- * 
+/* Database Configuration File - 
  * This file contains database connection settings and configuration
- */
+*/
 
 // Database Configuration - Docker Environment Support
 define('DB_HOST', $_ENV['DB_HOST'] ?? getenv('DB_HOST') ?: 'mysql');
@@ -23,7 +20,7 @@ define('REDIS_HOST', $_ENV['REDIS_HOST'] ?? getenv('REDIS_HOST') ?: 'redis');
 define('REDIS_PORT', $_ENV['REDIS_PORT'] ?? getenv('REDIS_PORT') ?: 6379);
 
 // Security Configuration
-define('SESSION_TIMEOUT', 3600); // 1 hour in seconds
+define('SESSION_TIMEOUT', 3600); // 1 hour
 define('PASSWORD_MIN_LENGTH', 6);
 define('MAX_LOGIN_ATTEMPTS', 3);
 
@@ -73,9 +70,7 @@ class Database {
         return $this->conn;
     }
 
-    /**
-     * Close database connection
-     */
+    /* Close database connection */
     public function closeConnection() {
         $this->conn = null;
     }
