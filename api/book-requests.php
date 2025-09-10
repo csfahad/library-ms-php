@@ -1,8 +1,5 @@
 <?php
-/**
- * AJAX endpoint for book request operations
- * Library Management System
- */
+/* AJAX endpoint for book request operations */
 
 require_once '../config/database.php';
 require_once '../includes/auth.php';
@@ -21,17 +18,14 @@ function sendJsonResponse($success, $message, $data = null) {
     exit;
 }
 
-// Require login
 if (!isLoggedIn()) {
     sendJsonResponse(false, 'Authentication required.');
 }
 
-// Check request method
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     sendJsonResponse(false, 'Invalid request method.');
 }
 
-// Get current user
 $currentUser = getCurrentUser();
 $action = $_POST['action'] ?? '';
 
