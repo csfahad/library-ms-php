@@ -27,5 +27,3 @@ CREATE INDEX idx_book_requests_user ON book_requests(user_id);
 CREATE INDEX idx_book_requests_book ON book_requests(book_id);
 CREATE INDEX idx_book_requests_status ON book_requests(status);
 CREATE INDEX idx_book_requests_date ON book_requests(request_date);
-
--- Insert this table creation into your database

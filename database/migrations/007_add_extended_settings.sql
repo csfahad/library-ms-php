@@ -1,5 +1,4 @@
 -- Migration: Add extended system settings
--- Date: 2025-09-08
 -- Description: Add extended system settings for comprehensive library management
 
 -- Insert extended system settings with default values

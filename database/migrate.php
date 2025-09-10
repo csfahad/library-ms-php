@@ -1,8 +1,5 @@
 <?php
-/**
- * Database Migration Runner
- * Library Management System
- */
+/* Database Migration Runner */
 
 require_once __DIR__ . '/../config/database.php';
 
@@ -15,10 +12,8 @@ class MigrationRunner {
         $this->migrationsPath = __DIR__ . '/migrations/';
         $this->initializeMigrationsTable();
     }
-    
-    /**
-     * Initialize migrations table to track executed migrations
-     */
+
+    /* Initialize migrations table to track executed migrations */
     private function initializeMigrationsTable() {
         $sql = "CREATE TABLE IF NOT EXISTS migrations (
             id INT PRIMARY KEY AUTO_INCREMENT,
@@ -27,10 +22,8 @@ class MigrationRunner {
         )";
         $this->pdo->exec($sql);
     }
-    
-    /**
-     * Run pending migrations
-     */
+
+    /* Run pending migrations */
     public function runMigrations() {
         $executedMigrations = $this->getExecutedMigrations();
         $migrationFiles = $this->getMigrationFiles();
@@ -61,10 +54,8 @@ class MigrationRunner {
         
         echo "All migrations completed!\n";
     }
-    
-    /**
-     * Get list of executed migrations
-     */
+
+    /* Get list of executed migrations */
     private function getExecutedMigrations() {
         try {
             $stmt = $this->pdo->query("SELECT migration FROM migrations ORDER BY id");
@@ -73,19 +64,15 @@ class MigrationRunner {
             return [];
         }
     }
-    
-    /**
-     * Get list of migration files
-     */
+
+    /* Get list of migration files */
     private function getMigrationFiles() {
         $files = glob($this->migrationsPath . '*.sql');
         sort($files);
         return $files;
     }
-    
-    /**
-     * Show migration status
-     */
+
+    /* Show migration status */
     public function showStatus() {
         $executedMigrations = $this->getExecutedMigrations();
         $migrationFiles = $this->getMigrationFiles();
@@ -95,7 +82,7 @@ class MigrationRunner {
         
         foreach ($migrationFiles as $file) {
             $migrationName = basename($file, '.sql');
-            $status = in_array($migrationName, $executedMigrations) ? '✓ Executed' : '⏳ Pending';
+            $status = in_array($migrationName, $executedMigrations) ? 'Executed' : 'Pending';
             echo "$status: $migrationName\n";
         }
     }

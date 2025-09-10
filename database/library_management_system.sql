@@ -1,6 +1,4 @@
 -- Library Management System Database
--- Created: September 6, 2025
--- Author: Library Management System Project
 
 -- Create Database
 CREATE DATABASE IF NOT EXISTS library_management_system;

@@ -1,5 +1,5 @@
 -- Migration: Add feedback table
--- Run this SQL to add the feedback functionality to your database
+-- Run this SQL to add the feedback functionality to the database
 
 CREATE TABLE IF NOT EXISTS feedback (
     feedback_id INT PRIMARY KEY AUTO_INCREMENT,

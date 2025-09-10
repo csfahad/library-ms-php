@@ -1,5 +1,4 @@
 -- Migration: Add Book Requests System
--- Created: September 8, 2025
 -- Description: Creates book_requests table and related functionality for student book requests and admin approvals
 
 -- Book Requests Table
