@@ -94,12 +94,12 @@ $issued_books = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Return Books - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/fixed-modern.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Custom styles for return book page */
         
-        /* Search form styling */
+        /* Search form */
         .search-field-group {
             margin-bottom: 0;
         }
@@ -151,7 +151,7 @@ $issued_books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             font-weight: 500;
         }
         
-        /* Compact stats grid */
+        /* Stats grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -221,7 +221,7 @@ $issued_books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             box-shadow: var(--shadow-md);
         }
         
-        /* Main content area with horizontal layout */
+        /* Main content area */
         .book-content {
             display: flex;
             padding: 0.5rem;
@@ -365,7 +365,7 @@ $issued_books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             margin-bottom: 0.5rem;
         }
         
-        /* Modal improvements */
+        /* Modal */
         .modal {
             position: fixed;
             top: 0;
@@ -900,7 +900,6 @@ $issued_books = $stmt->fetchAll(PDO::FETCH_ASSOC);
             document.getElementById('returnModal').style.display = 'none';
         }
         
-        // Event listeners
         document.getElementById('searchInput')?.addEventListener('input', filterBooks);
         document.getElementById('statusFilter')?.addEventListener('change', filterBooks);
         

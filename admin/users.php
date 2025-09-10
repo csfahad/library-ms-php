@@ -1,14 +1,10 @@
 <?php
-/**
- * Users Management Page
- * Admin Panel - Library Management System
- */
+/* Users Management Page */
 
 require_once '../config/database.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
-// Require admin access
 requireAdmin();
 
 $message = '';
@@ -98,15 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Get search parameters
 $search = trim($_GET['search'] ?? '');
 
-// Simple debug - remove this after testing
-if (!empty($search)) {
-    echo "<!-- DEBUG: Search term is: '$search' -->";
-}
-
-// Get users (no role filtering needed since all are students)
 $users = getUsers($search, '');
 
 $pageTitle = 'Manage Users';
@@ -118,7 +107,7 @@ $pageTitle = 'Manage Users';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle . ' - ' . SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/fixed-modern.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="admin-layout">
@@ -235,7 +224,8 @@ $pageTitle = 'Manage Users';
                         </div>
                     </form>
                 </div>
-            </div>            <!-- Users Table -->
+            </div>            
+            <!-- Users Table -->
             <div class="content-card">
                 <div class="content-card-header">
                     <h3 class="content-card-title">
@@ -399,7 +389,6 @@ $pageTitle = 'Manage Users';
 
     <script src="../assets/js/script.js"></script>
     <script>
-        // Users data for JavaScript operations
         const usersData = <?php echo json_encode($users); ?>;
         
         function editUser(userId) {

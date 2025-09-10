@@ -1,14 +1,10 @@
 <?php
-/**
- * Books Management Page
- * Admin Panel - Library Management System
- */
+/* Books Management Page */
 
 require_once '../config/database.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
-// Require admin access
 requireAdmin();
 
 $message = '';
@@ -77,36 +73,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Get search parameters
 $search = sanitizeInput($_GET['search'] ?? '');
-
-// Debug: Let's see what we have
-error_log("Books search term: '$search'");
-
-// Get books
 $books = getBooks($search);
-
-// Debug: Let's see the results
-error_log("Books found: " . count($books));
-if (!empty($search) && empty($books)) {
-    error_log("Search returned no results for: '$search'");
-}
-
-// Additional debug - let's check if we have ANY books at all
-$allBooks = getBooks('');
-error_log("Total books in database: " . count($allBooks));
-
-// Let's also test database connection
-try {
-    $db = getDB();
-    $stmt = $db->prepare("SELECT COUNT(*) as total FROM books");
-    $stmt->execute();
-    $result = $stmt->fetch();
-    $totalBooks = $result['total'];
-    error_log("Direct count from books table: " . $totalBooks);
-} catch (Exception $e) {
-    error_log("Database error: " . $e->getMessage());
-}
 
 // Get categories for dropdown
 $categories = getBookCategories();
@@ -120,7 +88,7 @@ $pageTitle = 'Manage Books';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle . ' - ' . SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/fixed-modern.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="admin-layout">
@@ -319,7 +287,6 @@ $pageTitle = 'Manage Books';
     </div>
 
     <!-- Add Book Modal -->
-        <!-- Simple Working Modals -->
     <style>
         .simple-modal {
             display: none;
@@ -721,10 +688,8 @@ $pageTitle = 'Manage Books';
     </div>
                 
     <script>
-        // Store books data for JavaScript functions
         const booksData = <?php echo json_encode($books); ?>;
         
-        // Modal functions using LMS modal system
         function showAddBookModal() {
             LMS.openModal('addBookModal');
         }
@@ -732,7 +697,6 @@ $pageTitle = 'Manage Books';
         function editBook(bookId) {
             const book = booksData.find(b => b.book_id == bookId);
             if (book) {
-                // Populate form
                 document.getElementById('editBookId').value = book.book_id;
                 document.getElementById('editTitle').value = book.title;
                 document.getElementById('editAuthor').value = book.author;
@@ -743,17 +707,14 @@ $pageTitle = 'Manage Books';
                 document.getElementById('editPrice').value = book.price || '';
                 document.getElementById('editDescription').value = book.description || '';
                 
-                // Show modal
                 LMS.openModal('editBookModal');
             }
         }
         
         function deleteBook(bookId, bookTitle) {
-            // Set the book details in the delete modal
             document.getElementById('deleteBookTitle').textContent = bookTitle;
             document.getElementById('deleteBookId').value = bookId;
             
-            // Show the delete confirmation modal
             LMS.openModal('deleteConfirmModal');
         }
     </script>

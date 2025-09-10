@@ -1,30 +1,25 @@
 <?php
-/**
- * Admin Book Requests Management Page
- * Library Management System
- */
+/* Admin Book Requests Management Page */
 
 require_once '../config/database.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
-// Require admin login
 requireLogin();
 if (!isAdmin()) {
     header('Location: ../auth.php');
     exit;
 }
 
-// Get current user
 $currentUser = getCurrentUser();
 
-// Handle status filter
+// handle status filter
 $statusFilter = $_GET['status'] ?? 'pending';
 $page = max(1, intval($_GET['page'] ?? 1));
 $limit = 20;
 $offset = ($page - 1) * $limit;
 
-// Get requests based on status
+// get requests based on status
 if ($statusFilter === 'all') {
     $requests = [];
     try {
@@ -69,7 +64,7 @@ if ($statusFilter === 'all') {
     }
 }
 
-// Get counts for each status
+// get counts for each status
 $statusCounts = [];
 try {
     $db = getDB();
@@ -88,7 +83,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Requests - <?php echo SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/fixed-modern.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         /* Filter Tabs Styling */
@@ -392,7 +387,6 @@ try {
             background: #c82333;
         }
 
-        /* Remove any unwanted overlays */
         .dashboard-card {
             background: white;
             border-radius: 8px;
@@ -764,17 +758,14 @@ try {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     <script>
-        // Notification function to replace alert()
         function showNotification(title, message, type = 'info') {
             const modal = document.getElementById('notificationModal');
             const header = document.getElementById('notificationHeader');
             const titleEl = document.getElementById('notificationTitle');
             const messageEl = document.getElementById('notificationMessage');
             
-            // Set title
             titleEl.textContent = title;
             
-            // Set message with icon
             const icons = {
                 success: 'fas fa-check-circle',
                 error: 'fas fa-exclamation-circle',
@@ -787,10 +778,8 @@ try {
                 <div>${message}</div>
             `;
             
-            // Set header style
             header.className = `modal-header ${type}`;
             
-            // Show modal
             modal.classList.add('show');
             document.body.style.overflow = 'hidden';
         }
@@ -807,7 +796,6 @@ try {
             modal.classList.remove('show');
             document.body.style.overflow = 'auto';
             
-            // Reset form data
             const form = modal.querySelector('form');
             if (form) {
                 form.reset();
@@ -843,7 +831,6 @@ try {
             const requestId = document.getElementById('approvalRequestId').value;
             const notes = document.getElementById('approvalNotes').value;
             
-            // Disable submit button to prevent multiple submissions
             const submitBtn = event.target;
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
@@ -890,7 +877,6 @@ try {
                 return;
             }
             
-            // Disable submit button to prevent multiple submissions
             const submitBtn = event.target;
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
@@ -932,7 +918,6 @@ try {
             const requestId = document.getElementById('returnRequestId').value;
             const fine = document.getElementById('returnFine').value || 0;
             
-            // Disable submit button to prevent multiple submissions
             const submitBtn = event.target;
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';

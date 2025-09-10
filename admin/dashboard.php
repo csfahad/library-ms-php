@@ -1,24 +1,17 @@
 <?php
-/**
- * Admin Dashboard
- * Library Management System
- */
+/* Admin Dashboard */
 
 require_once '../config/database.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
-// Require admin access
 requireAdmin();
 
-// Get dashboard statistics
 $stats = getDashboardStats();
 
-// Get recent activities
 $recentIssues = getAllIssuedBooks('issued');
 $overdueBooks = getOverdueBooks();
 
-// Limit recent activities for dashboard
 $recentIssues = array_slice($recentIssues, 0, 5);
 $overdueBooks = array_slice($overdueBooks, 0, 5);
 
@@ -31,7 +24,7 @@ $pageTitle = 'Admin Dashboard';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle . ' - ' . SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/fixed-modern.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="admin-layout">
@@ -323,7 +316,6 @@ $pageTitle = 'Admin Dashboard';
     <script src="../assets/js/admin-dashboard.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Add click handlers to stat cards for navigation
             document.querySelectorAll('.stat-card').forEach(card => {
                 card.addEventListener('click', function() {
                     if (this.classList.contains('books')) {

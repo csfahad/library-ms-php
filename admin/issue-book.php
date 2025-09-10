@@ -1,14 +1,10 @@
 <?php
-/**
- * Issue Book Page
- * Admin Panel - Library Management System
- */
+/* Issue Book Page */
 
 require_once '../config/database.php';
 require_once '../includes/auth.php';
 require_once '../includes/functions.php';
 
-// Require admin or librarian access
 requireLibrarianOrAdmin();
 
 $message = '';
@@ -26,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $message = 'Book issued successfully!';
             $messageType = 'success';
         } else {
-            $message = $result; // Error message from issueBook function
+            $message = $result;
             $messageType = 'danger';
         }
     } else {
@@ -35,16 +31,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Get available books and active users for dropdowns
-$availableBooks = getBooks(); // Only get available books
-$activeUsers = getUsers('', ''); // Get all users
+$availableBooks = getBooks();
+$activeUsers = getUsers('', '');
 
-// Filter only available books
 $availableBooks = array_filter($availableBooks, function($book) {
     return $book['available_quantity'] > 0;
 });
 
-// Filter only active users
 $activeUsers = array_filter($activeUsers, function($user) {
     return $user['status'] === 'active';
 });
@@ -58,7 +51,7 @@ $pageTitle = 'Issue Book';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle . ' - ' . SITE_NAME; ?></title>
-    <link rel="stylesheet" href="../assets/css/fixed-modern.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .book-card, .user-card {
@@ -490,19 +483,15 @@ $pageTitle = 'Issue Book';
 
         // Show specific step
         function showStep(step) {
-            // Hide all steps
             for (let i = 1; i <= 3; i++) {
                 document.getElementById(`step${i}`).style.display = 'none';
             }
             
-            // Show current step
             document.getElementById(`step${step}`).style.display = 'block';
             currentStep = step;
             
-            // Update step indicator
             updateStepIndicator();
             
-            // Scroll to top of content
             document.querySelector('.main-content').scrollIntoView({behavior: 'smooth'});
         }
 
@@ -525,13 +514,10 @@ $pageTitle = 'Issue Book';
 
         // Select user
         function selectUser(element) {
-            // Remove previous selection
             document.querySelectorAll('.user-card').forEach(card => card.classList.remove('selected'));
             
-            // Add selection to clicked card
             element.classList.add('selected');
             
-            // Store selected user data
             selectedUser = {
                 user_id: element.getAttribute('data-user-id'),
                 name: element.getAttribute('data-user-name'),
@@ -540,7 +526,6 @@ $pageTitle = 'Issue Book';
                 phone: element.getAttribute('data-user-phone')
             };
             
-            // Update selection summary
             document.getElementById('selectedUserText').innerHTML = `${selectedUser.name} (${selectedUser.email})`;
             
             // Auto-advance to book selection after 1 second
@@ -551,13 +536,10 @@ $pageTitle = 'Issue Book';
 
         // Select book
         function selectBook(element) {
-            // Remove previous selection
             document.querySelectorAll('.book-card').forEach(card => card.classList.remove('selected'));
             
-            // Add selection to clicked card
             element.classList.add('selected');
             
-            // Store selected book data
             selectedBook = {
                 book_id: element.getAttribute('data-book-id'),
                 title: element.getAttribute('data-book-title'),
@@ -567,7 +549,6 @@ $pageTitle = 'Issue Book';
                 available: element.getAttribute('data-book-available')
             };
             
-            // Update selection summary
             document.getElementById('selectedBookText').innerHTML = `${selectedBook.title} by ${selectedBook.author}`;
             
             // Auto-advance to confirmation after 1 second
@@ -578,7 +559,6 @@ $pageTitle = 'Issue Book';
 
         // Show confirmation step
         function showConfirmation() {
-            // Populate confirmation details
             document.getElementById('confirmUserDetails').innerHTML = `
                 <p><strong>Name:</strong> ${selectedUser.name}</p>
                 <p><strong>Email:</strong> ${selectedUser.email}</p>
@@ -594,11 +574,9 @@ $pageTitle = 'Issue Book';
                 ${selectedBook.isbn ? `<p><strong>ISBN:</strong> ${selectedBook.isbn}</p>` : ''}
             `;
             
-            // Set hidden form values
             document.getElementById('selectedUserId').value = selectedUser.user_id;
             document.getElementById('selectedBookId').value = selectedBook.book_id;
             
-            // Show confirmation step
             showStep(3);
         }
 
@@ -648,20 +626,16 @@ $pageTitle = 'Issue Book';
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            // Add click handlers to user cards
             document.querySelectorAll('.user-card').forEach(card => {
                 card.addEventListener('click', () => selectUser(card));
             });
             
-            // Add click handlers to book cards
             document.querySelectorAll('.book-card').forEach(card => {
                 card.addEventListener('click', () => selectBook(card));
             });
             
-            // Setup search functionality
             setupSearch();
             
-            // Initialize step indicator
             updateStepIndicator();
         });
     </script>
