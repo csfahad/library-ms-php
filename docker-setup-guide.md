@@ -100,8 +100,6 @@ docker info               # Should connect without errors
 
 ---
 
----
-
 ## **Access Points After Setup:**
 
 ### **Main Application:**
