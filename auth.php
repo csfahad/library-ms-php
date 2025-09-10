@@ -1,14 +1,10 @@
 <?php
-/**
- * Library Management System - Main Login Page
- * This is the entry point for the library management system
- */
+/* Library Management System - Main Login Page */
 
 require_once 'config/database.php';
 require_once 'includes/auth.php';
 require_once 'includes/functions.php';
 
-// If user is already logged in, redirect to appropriate dashboard
 if (isLoggedIn()) {
     if (isAdmin()) {
         header('Location: admin/dashboard.php');
@@ -40,7 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !isset($_POST['register'])) {
         $user = loginUser($email, $password, $userType);
         
         if ($user) {
-            // Successful login, redirect based on role
             if ($userType === 'admin' || $user['role'] === 'admin') {
                 header('Location: admin/dashboard.php');
             } else {
@@ -95,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo SITE_NAME; ?> - Welcome</title>
-    <link rel="stylesheet" href="assets/css/fixed-modern.css">
+    <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Override login container background */
@@ -325,7 +320,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
                     </div>
                 </div>
 
-                <!-- Row 3: Phone (full width) -->
+                <!-- Row 3: Phone -->
                 <div class="register-form-full-width">
                     <div class="form-group">
                         <label for="reg_phone" class="form-label">
@@ -341,7 +336,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
                     </div>
                 </div>
 
-                <!-- Row 4: Address (full width) -->
+                <!-- Row 4: Address -->
                 <div class="register-form-full-width">
                     <div class="form-group">
                         <label for="reg_address" class="form-label">
@@ -376,7 +371,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
                             </div>
                             <div class="demo-card-content">
                                 <h4>Student Access</h4>
-                                <p>student@lms.com</p>
+                                <p>john@example.com</p>
                             </div>
                         </div>
                         <div class="demo-card" onclick="fillDemoCredentials('admin')">
@@ -385,7 +380,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
                             </div>
                             <div class="demo-card-content">
                                 <h4>Admin Access</h4>
-                                <p>admin@lms.com</p>
+                                <p>admin@library.com</p>
                             </div>
                         </div>
                     </div>
@@ -478,7 +473,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
             const userTypeRadios = document.querySelectorAll('input[name="user_type"]');
             
             if (type === 'admin') {
-                emailInput.value = 'admin@lms.com';
+                emailInput.value = 'admin@library.com';
                 passwordInput.value = 'password';
                 // Select admin radio button
                 userTypeRadios.forEach(radio => {
@@ -487,7 +482,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])) {
                     }
                 });
             } else if (type === 'student') {
-                emailInput.value = 'student@lms.com';
+                emailInput.value = 'john@example.com';
                 passwordInput.value = 'password';
                 // Select user radio button
                 userTypeRadios.forEach(radio => {

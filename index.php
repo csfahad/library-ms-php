@@ -1,8 +1,5 @@
 <?php
-/**
- * Library Management System - Landing Page
- * Modern, responsive landing page for the library management system
- */
+/* Library Management System - Landing Page */
 
 require_once 'config/database.php';
 require_once 'includes/functions.php';
@@ -18,7 +15,7 @@ $libraryDescription = getSetting('library_description', 'Modern, Secure & Effici
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($libraryName); ?> - Digital Library Solution</title>
     <meta name="description" content="<?php echo htmlspecialchars($libraryDescription); ?>">
-    <link rel="stylesheet" href="assets/css/fixed-modern.css">
+    <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Landing Page Specific Styles */
@@ -51,7 +48,7 @@ $libraryDescription = getSetting('library_description', 'Modern, Secure & Effici
             z-index: 1;
         }
 
-        /* Hero Background - Simplified since main gradient is on body */
+        /* Hero Background */
         .hero {
             position: relative;
         }
@@ -643,7 +640,7 @@ $libraryDescription = getSetting('library_description', 'Modern, Secure & Effici
             observer.observe(card);
         });
 
-        // Mobile menu toggle (for future enhancement)
+        // Mobile menu toggle
         const mobileMenu = document.getElementById('mobile-menu');
         const navbarNav = document.querySelector('.navbar-nav');
         
