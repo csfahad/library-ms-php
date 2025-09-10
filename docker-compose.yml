@@ -74,7 +74,7 @@ services:
         networks:
             - lms-network
 
-    # Redis for session storage and caching (optional but recommended)
+    # Redis for session storage and caching
     redis:
         image: redis:7-alpine
         container_name: lms_redis
