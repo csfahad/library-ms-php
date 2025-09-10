@@ -16,8 +16,11 @@
 ## **One-Command Setup:**
 
 ```bash
+# Clone the repository
+git clone https://github.com/csfahad/library-ms-php
+
 # Navigate to LMS directory
-cd /path/to/lms
+cd library-ms-php
 
 # Run the complete setup
 ./setup_complete_docker.sh
