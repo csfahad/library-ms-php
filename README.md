@@ -2,7 +2,7 @@
 
 A comprehensive web-based Library Management System built with PHP, MySQL, HTML5, CSS3, and JavaScript. This system automates library operations including book management, member registration, book issue/return tracking, and report generation.
 
-## 🚀 Features
+## Features
 
 ### Core Functionality
 
@@ -23,7 +23,7 @@ A comprehensive web-based Library Management System built with PHP, MySQL, HTML5
 -   **Database Optimization**: Indexed tables and optimized queries
 -   **Error Handling**: Comprehensive error logging and user-friendly messages
 
-## 📋 Requirements
+## Requirements
 
 ### Software Requirements
 
@@ -49,123 +49,24 @@ The following PHP extensions are required:
 -   **Production**: Minimum 4GB RAM, 500MB storage
 -   **Client**: Any device with internet connection
 
-## ⚙️ PHP Installation Guide
-
-### Do I Need to Install PHP Separately?
-
-**Yes, you need PHP installed on your system** regardless of your database choice (Docker MySQL, local MySQL, or XAMPP). Here's why:
-
--   🖥️ **PHP runs on your host system** to serve the web application
--   🐳 **Docker only provides MySQL** - not the PHP web server
--   🔗 **PHP connects to Docker MySQL** via network (localhost:3306)
-
-### Installing PHP
-
-#### macOS
-
-```bash
-# Option 1: Using Homebrew (Recommended)
-brew install php
-
-# Verify installation
-php --version
-php -m | grep -i pdo  # Check for PDO extensions
-
-# Option 2: Using MacPorts
-sudo port install php81 +apache2
-```
-
-#### Ubuntu/Debian
-
-```bash
-# Install PHP with required extensions
-sudo apt update
-sudo apt install php php-cli php-mysql php-pdo php-mbstring php-json php-openssl
-
-# Verify installation
-php --version
-php -m | grep -i pdo
-```
-
-#### CentOS/RHEL/Fedora
-
-```bash
-# CentOS/RHEL 8+
-sudo dnf install php php-mysqlnd php-pdo php-mbstring php-json php-openssl
-
-# CentOS/RHEL 7
-sudo yum install php php-mysql php-pdo php-mbstring php-json php-openssl
-
-# Verify installation
-php --version
-```
-
-#### Windows
-
-```bash
-# Option 1: Download from official site
-# 1. Download PHP from https://windows.php.net/download/
-# 2. Extract to C:\php
-# 3. Add C:\php to System PATH
-# 4. Rename php.ini-development to php.ini
-# 5. Enable required extensions in php.ini
-
-# Option 2: Using Chocolatey
-choco install php
-
-# Option 3: Using Scoop
-scoop install php
-
-# Verify installation
-php --version
-php -m | findstr -i pdo
-```
-
-### Enabling Required Extensions
-
-Edit your `php.ini` file and ensure these lines are uncommented:
-
-```ini
-extension=pdo
-extension=pdo_mysql
-extension=mbstring
-extension=openssl
-extension=json
-extension=session
-```
-
-Find your `php.ini` location:
-
-```bash
-php --ini
-```
-
-## 🛠️ Installation
+## Installation
 
 ### Quick Setup (Automated)
 
-**🚀 RECOMMENDED: Complete Docker Setup (Zero Local Installs)**
+**RECOMMENDED: Complete Docker Setup (Zero Local Installations)**
+
+**For detailed Docker setup:** See [docker-setup-guide.md](docker-setup-guide.md)
 
 ```bash
 # Everything in Docker - No PHP, MySQL, or Apache installation needed!
+
+git clone https://github.com/csfahad/library-ms-php
+
+cd library-ms-php/
+
 ./setup_complete_docker.sh
 
 # Then open: http://localhost:8000
-```
-
-**📖 For detailed Docker setup:** See [DOCKER_SETUP.md](DOCKER_SETUP.md)
-
-**Alternative setups:**
-
-```bash
-# Docker MySQL only (requires local PHP)
-./setup_docker_mysql.sh
-
-# Local MySQL (traditional setup)
-./setup_database.sh
-
-# Windows (Local MySQL)
-setup_database.bat
 ```
 
 **Complete Docker Setup Features:**
@@ -191,7 +92,9 @@ Docker provides an isolated, consistent MySQL environment that's easy to set up 
 
 ```bash
 # Install Docker Desktop
+
 # macOS/Windows: Download from https://www.docker.com/products/docker-desktop/
+
 # Ubuntu:
 sudo apt update
 sudo apt install docker.io docker-compose
@@ -304,7 +207,7 @@ docker exec -it lms_mysql mysql -u lms_user -p library_management_system
 
 #### 6. Database Persistence & Management
 
-**⚠️ IMPORTANT: Database Schema Persistence**
+**IMPORTANT: Database Schema Persistence**
 
 The database schema and all changes are automatically persisted through:
 
@@ -315,18 +218,6 @@ The database schema and all changes are automatically persisted through:
 **Database Management Commands:**
 
 ```bash
-# Initialize/Reset database with all tables and settings
-./setup-database.sh setup
-
-# Show current database status
-./setup-database.sh info
-
-# Reset database completely (⚠️ DESTROYS ALL DATA)
-./setup-database.sh reset
-
-# Run pending migrations only
-./setup-database.sh migrate
-
 # Manual migration runner
 php database/migrate.php run
 php database/migrate.php status
@@ -335,13 +226,11 @@ php database/migrate.php status
 **What's automatically included:**
 
 -   ✅ All required tables (users, books, admin, system_settings, etc.)
--   ✅ Default admin account: admin@library.com / admin123
--   ✅ Sample user account: student@library.com / student123
+-   ✅ Default admin account: admin@library.com / password
+-   ✅ Sample user account: john@example.com / password
 -   ✅ 5 sample books with proper categories
 -   ✅ System settings (library info, fine rates, etc.)
 -   ✅ Database constraints and indexes
-
-**For detailed database management, see:** [Database Documentation](docs/DATABASE.md)
 
 ### Option 2: Local MySQL Database (Traditional Setup)
 
@@ -412,7 +301,7 @@ mysql -u root -p library_management_system < database/library_management_system.
 
 #### 5. Install PHP (Required)
 
-**Note**: PHP installation is required regardless of database choice. See the [PHP Installation Guide](#-php-installation-guide) above for detailed instructions.
+**Note**: PHP installation is required regardless of database choice.
 
 ```bash
 # Quick install commands:
@@ -533,16 +422,16 @@ try {
     $pdo = $database->getConnection();
 
     if ($pdo) {
-        echo "✅ Database connection successful!<br>";
+        echo "Database connection successful!<br>";
         echo "Server info: " . $pdo->getAttribute(PDO::ATTR_SERVER_INFO) . "<br>";
 
         // Test if tables exist
         $stmt = $pdo->query("SHOW TABLES");
         $tables = $stmt->fetchAll(PDO::FETCH_COLUMN);
-        echo "📋 Found " . count($tables) . " tables: " . implode(', ', $tables);
+        echo "Found " . count($tables) . " tables: " . implode(', ', $tables);
     }
 } catch (Exception $e) {
-    echo "❌ Database connection failed: " . $e->getMessage();
+    echo "Database connection failed: " . $e->getMessage();
 }
 ?>
 ```
@@ -560,11 +449,11 @@ http://localhost/lms/
 http://localhost:8000
 ```
 
-## 👥 Default Login Credentials
+## Default Login Credentials
 
 ### Admin Access
 
--   **Username**: admin
+-   **Email**: admin@library.com
 -   **Password**: password
 
 ### Student Access
@@ -572,18 +461,17 @@ http://localhost:8000
 -   **Email**: john@example.com
 -   **Password**: password
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 lms/
-├── admin/                  # Admin panel files
+├── admin/                 # Admin panel files
 │   ├── dashboard.php      # Admin dashboard
 │   ├── books.php          # Book management
 │   ├── users.php          # User management
 │   ├── issue-book.php     # Issue books
 │   ├── return-book.php    # Return books
-│   ├── issued-books.php   # View issued books
-│   ├── overdue-books.php  # Overdue management
+│   ├── books-requests.php # View all books request
 │   ├── reports.php        # Reports generation
 │   └── settings.php       # System settings
 ├── student/               # Student panel files
@@ -611,7 +499,7 @@ lms/
 └── README.md              # Documentation
 ```
 
-## 🎯 Usage Guide
+## Usage Guide
 
 ### For Administrators
 
@@ -633,7 +521,7 @@ lms/
 6. **Update Profile**: Manage personal information
 7. **Submit Feedback**: Provide feedback to library administration
 
-## 📊 Database Schema
+## Database Schema
 
 ### Main Tables
 
@@ -652,14 +540,14 @@ lms/
 -   Categories organize books by subject/genre
 -   System settings control library rules
 
-## 🔧 Configuration Options
+## Configuration Options
 
 ### Library Settings (configurable)
 
 ```php
-MAX_BOOKS_PER_USER = 3;        # Maximum books per user
+MAX_BOOKS_PER_USER = 5;        # Maximum books per user
 DEFAULT_ISSUE_DAYS = 14;       # Default lending period
-FINE_PER_DAY = 2.00;          # Daily fine amount
+FINE_PER_DAY = 2.00;           # Daily fine amount
 SESSION_TIMEOUT = 3600;        # Session timeout (seconds)
 ```
 
@@ -670,7 +558,7 @@ SESSION_TIMEOUT = 3600;        # Session timeout (seconds)
 -   Input sanitization and validation
 -   SQL injection prevention with prepared statements
 
-## 🚀 Advanced Features
+## Advanced Features
 
 ### Automated Workflows
 
@@ -693,7 +581,7 @@ SESSION_TIMEOUT = 3600;        # Session timeout (seconds)
 -   **Availability Filter**: Show only available books
 -   **Category Browsing**: Browse by book categories
 
-## 📱 Mobile Responsiveness
+## Mobile Responsiveness
 
 The system is fully responsive and provides optimal experience across:
 
@@ -701,7 +589,7 @@ The system is fully responsive and provides optimal experience across:
 -   **Tablet**: Touch-optimized interface with adapted layouts
 -   **Mobile**: Streamlined interface optimized for small screens
 
-## 🔒 Security Features
+## Security Features
 
 ### Authentication & Authorization
 
@@ -717,72 +605,7 @@ The system is fully responsive and provides optimal experience across:
 -   XSS attack prevention
 -   Error message sanitization
 
-## 🐛 Troubleshooting
-
-### Docker MySQL Issues
-
-1. **Docker Not Running**
-
-```bash
-# Check Docker status
-docker info
-
-# Start Docker Desktop (macOS/Windows) or service (Linux)
-sudo systemctl start docker          # Linux
-# Or start Docker Desktop app
-```
-
-2. **Container Startup Issues**
-
-```bash
-# Check container status
-docker-compose ps
-
-# View container logs
-docker-compose logs mysql
-docker-compose logs phpmyadmin
-
-# Restart containers
-docker-compose restart
-
-# Rebuild containers if needed
-docker-compose down
-docker-compose up --build -d
-```
-
-3. **Port Conflicts**
-
-```bash
-# Check what's using port 3306 or 8080
-sudo lsof -i :3306                   # macOS/Linux
-sudo lsof -i :8080                   # macOS/Linux
-netstat -an | findstr :3306          # Windows
-
-# Change ports in docker-compose.yml if needed:
-# "3307:3306" instead of "3306:3306"
-# "8081:80" instead of "8080:80"
-```
-
-4. **Database Connection from PHP**
-
-```bash
-# Test connection to Docker MySQL
-docker exec lms_mysql mysql -u lms_user -plms_password_123 library_management_system
-
-# Check if PHP can reach Docker MySQL
-php -r "echo (new PDO('mysql:host=localhost;port=3306', 'lms_user', 'lms_password_123')) ? 'Connected' : 'Failed';"
-```
-
-5. **Data Persistence Issues**
-
-```bash
-# Check volumes
-docker volume ls
-docker volume inspect lms_mysql_data
-
-# Remove volumes to reset data (CAUTION: This deletes all data!)
-docker-compose down -v
-```
+## Troubleshooting
 
 ### Database Setup Issues
 
@@ -879,7 +702,7 @@ $dsn = "mysql:host=" . $this->host . ";dbname=" . $this->db_name . ";charset=" .
 
 ```bash
 # Check what's running on port 3306 (MySQL default)
-sudo netstat -tlnp | grep :3306      # Linux
+sudo netstat -tlnp | grep :3306       # Linux
 lsof -i :3306                         # macOS
 netstat -an | findstr :3306           # Windows
 
@@ -928,7 +751,7 @@ Look for "PDO" and "mysql" sections.
 -   No PHP errors in browser console
 -   Database connection test passes
 
-## 🔄 Backup & Maintenance
+## Backup & Maintenance
 
 ### Database Backup
 
@@ -1012,7 +835,7 @@ SELECT * FROM sys.schema_unused_indexes WHERE object_schema = 'library_managemen
 -   Backup database weekly
 -   Monitor system performance
 
-## 🚀 Future Enhancements
+## Future Enhancements
 
 ### Planned Features
 
@@ -1029,10 +852,9 @@ SELECT * FROM sys.schema_unused_indexes WHERE object_schema = 'library_managemen
 
 -   **Caching System**: Redis/Memcached integration
 -   **Load Balancing**: Support for multiple servers
--   **Docker Support**: Containerized deployment
 -   **Cloud Integration**: AWS/Google Cloud deployment options
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
@@ -1048,20 +870,15 @@ SELECT * FROM sys.schema_unused_indexes WHERE object_schema = 'library_managemen
 -   Test all functionality before submitting
 -   Ensure responsive design compatibility
 
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👨‍💻 Support
+## Support
 
 For support and questions:
 
--   **Email**: support@library-lms.com
+-   **Email**: support@library-lms.com(dummy)
 -   **Documentation**: Check this README and inline code comments
 -   **Issues**: Report bugs via GitHub issues
--   **Wiki**: Additional documentation in project wiki
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 -   Built with modern web technologies
 -   Icons provided by Font Awesome
