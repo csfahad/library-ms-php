@@ -189,7 +189,7 @@ $rejectedRequests = array_filter($bookRequests, function($req) { return $req['st
                                                 <?php 
                                                 $isOverdue = $request['due_date'] && strtotime($request['due_date']) < time();
                                                 ?>
-                                                <span class="badge <?php echo $isOverdue ? 'badge-danger' : 'badge-success'; ?>">
+                                                <span class="badge mb-2 <?php echo $isOverdue ? 'badge-danger' : 'badge-success'; ?>">
                                                     <?php echo $isOverdue ? 'Overdue' : 'Borrowed'; ?>
                                                 </span>
                                                 <small class="text-muted">
@@ -255,9 +255,9 @@ $rejectedRequests = array_filter($bookRequests, function($req) { return $req['st
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-start">
                                                 <?php if ($request['status'] === 'cancelled'): ?>
-                                                    <span class="badge badge-secondary">Cancelled</span>
+                                                    <span class="badge badge-secondary mb-2">Cancelled</span>
                                                 <?php else: ?>
-                                                    <span class="badge badge-danger">Rejected</span>
+                                                    <span class="badge badge-danger mb-2">Rejected</span>
                                                 <?php endif; ?>
                                                 <small class="text-muted">
                                                     <?php 

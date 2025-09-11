@@ -74,8 +74,8 @@ $history = getUserBorrowingHistory($currentUser['user_id'], 100); // Get up to 1
                     $totalFines = 0;
                     
                     foreach ($history as $h) {
-                        if ($h['fine_amount'] > 0) {
-                            $totalFines += $h['fine_amount'];
+                        if ($h['fine'] > 0) {
+                            $totalFines += $h['fine'];
                         }
                         if ($h['status'] === 'issued' && strtotime($h['due_date']) < time()) {
                             $totalOverdue++;
@@ -198,8 +198,8 @@ $history = getUserBorrowingHistory($currentUser['user_id'], 100); // Get up to 1
                                             <?php endif; ?>
                                         </td>
                                         <td>
-                                            <?php if ($record['fine_amount'] > 0): ?>
-                                                <span class="text-danger">$<?php echo number_format($record['fine_amount'], 2); ?></span>
+                                            <?php if ($record['fine'] > 0): ?>
+                                                <span class="text-danger">$<?php echo number_format($record['fine'], 2); ?></span>
                                             <?php else: ?>
                                                 <span class="text-success">$0.00</span>
                                             <?php endif; ?>
@@ -352,10 +352,12 @@ $history = getUserBorrowingHistory($currentUser['user_id'], 100); // Get up to 1
         }
         
         .stat-card {
-            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: var(--transition);
-            position: static;
             z-index: auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         .stat-card:hover {

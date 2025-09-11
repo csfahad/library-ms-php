@@ -40,7 +40,7 @@ switch ($report_type) {
         $stmt = $pdo->query("SELECT COUNT(*) as overdue_books FROM issued_books WHERE status = 'issued' AND due_date < NOW()");
         $overdue_books = $stmt->fetch(PDO::FETCH_ASSOC)['overdue_books'];
         
-        $stmt = $pdo->query("SELECT SUM(fine_amount) as total_fines FROM issued_books WHERE fine_amount > 0");
+        $stmt = $pdo->query("SELECT SUM(fine) as total_fines FROM issued_books WHERE fine > 0");
         $total_fines = $stmt->fetch(PDO::FETCH_ASSOC)['total_fines'] ?? 0;
         
         // Popular books
@@ -107,7 +107,7 @@ switch ($report_type) {
         
         $stmt = $pdo->query("SELECT ib.*, b.title, b.isbn, b.author, u.name, u.email, u.phone,
                             DATEDIFF(NOW(), ib.due_date) as days_overdue,
-                            (DATEDIFF(NOW(), ib.due_date) * $finePerDay) as fine_amount
+                            (DATEDIFF(NOW(), ib.due_date) * $finePerDay) as fine
                             FROM issued_books ib
                             JOIN books b ON ib.book_id = b.book_id
                             JOIN users u ON ib.user_id = u.user_id
@@ -124,7 +124,7 @@ switch ($report_type) {
                               COUNT(CASE WHEN ib.status = 'issued' THEN 1 END) as currently_issued,
                               COUNT(CASE WHEN ib.status = 'returned' THEN 1 END) as total_returned,
                               COUNT(CASE WHEN ib.status = 'issued' AND ib.due_date < NOW() THEN 1 END) as overdue_count,
-                              COALESCE(SUM(ib.fine_amount), 0) as total_fines
+                              COALESCE(SUM(ib.fine), 0) as total_fines
                               FROM users u
                               LEFT JOIN issued_books ib ON u.user_id = ib.user_id
                               GROUP BY u.user_id
@@ -154,11 +154,11 @@ switch ($report_type) {
         
         // Monthly fine collection
         $stmt = $pdo->prepare("SELECT DATE_FORMAT(return_date, '%Y-%m') as month,
-                              SUM(fine_amount) as monthly_fines,
+                              SUM(fine) as monthly_fines,
                               COUNT(*) as returns_with_fines
                               FROM issued_books 
                               WHERE status = 'returned' 
-                              AND fine_amount > 0 
+                              AND fine > 0 
                               AND return_date BETWEEN ? AND ?
                               GROUP BY DATE_FORMAT(return_date, '%Y-%m')
                               ORDER BY month DESC");
@@ -423,7 +423,7 @@ switch ($report_type) {
                                                 <span class="badge badge-danger"><?= $record['days_overdue'] ?> days</span>
                                             </td>
                                             <td>
-                                                <span class="text-danger font-weight-bold">$<?= number_format($record['fine_amount'], 2) ?></span>
+                                                <span class="text-danger font-weight-bold">$<?= number_format($record['fine'], 2) ?></span>
                                             </td>
                                         </tr>
                                         <?php endforeach; ?>
@@ -529,8 +529,8 @@ switch ($report_type) {
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <?php if (isset($record['fine_amount']) && $record['fine_amount'] > 0): ?>
-                                                    <span class="text-danger font-weight-bold">$<?= number_format($record['fine_amount'], 2) ?></span>
+                                                <?php if (isset($record['fine']) && $record['fine'] > 0): ?>
+                                                    <span class="text-danger font-weight-bold">$<?= number_format($record['fine'], 2) ?></span>
                                                 <?php else: ?>
                                                     $0.00
                                                 <?php endif; ?>
