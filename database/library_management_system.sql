@@ -123,7 +123,7 @@ INSERT INTO categories (category_name, description) VALUES
 
 -- Insert Default System Settings
 INSERT INTO system_settings (setting_key, setting_value, description) VALUES
-('library_name', 'City Library Management System', 'Name of the library'),
+('library_name', 'Library MS', 'Name of the library'),
 ('max_books_per_user', '3', 'Maximum books a user can issue'),
 ('default_issue_days', '14', 'Default number of days for book issue'),
 ('fine_per_day', '2.00', 'Fine amount per day for overdue books'),
